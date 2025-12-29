@@ -4,11 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     
-    <title>馬達負載計算工具 | Industrial Motor Load Calculator</title>
-    <meta name="description" content="專業垂直捲線機構馬達負載計算工具，支援功率與荷重推算。Professional Vertical Winch Motor Load Calculator.">
+    <title>馬達負載計算 Pro | Motor Load Calculator</title>
+    <meta name="description" content="專業垂直捲線機構計算工具 - 馬達功率、容許荷重、轉速與扭矩。">
+    <link rel="icon" href="https://img.icons8.com/fluency/48/engine.png">
+    
     <meta property="og:title" content="馬達負載計算工具 Pro">
-    <meta property="og:description" content="快速計算馬達功率、轉速與容許荷重，工業設計師必備工具。">
-    <meta property="og:image" content="https://placehold.co/600x400/0f172a/f59e0b?text=Motor+Calc+Pro">
+    <meta property="og:type" content="website">
+    <meta property="og:description" content="專為工程師設計的捲揚機構計算器，支援一鍵導出圖片報告。">
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -18,7 +20,7 @@
             theme: {
                 extend: {
                     colors: {
-                        ind: { deep: '#020617', panel: '#111827', accent: '#f59e0b', border: '#334155', danger: '#ef4444' }
+                        ind: { deep: '#020617', panel: '#111827', accent: '#f59e0b', border: '#334155' }
                     }
                 }
             }
@@ -26,179 +28,102 @@
     </script>
     
     <style>
-        /* Custom Base Styles */
-        body { 
-            background-color: #020617; 
-            background-image: radial-gradient(#1e293b 0.5px, transparent 0.5px); 
-            background-size: 20px 20px; 
-            font-family: 'Inter', system-ui, -apple-system, sans-serif; 
-            color: #94a3b8; 
-            -webkit-font-smoothing: antialiased;
-        }
-        
-        /* Layout Utilities */
+        body { background-color: #020617; background-image: radial-gradient(#1e293b 0.5px, transparent 0.5px); background-size: 20px 20px; font-family: 'Inter', system-ui, sans-serif; color: #94a3b8; }
         .report-grid { display: grid; grid-template-columns: 1fr 1fr; background: #0f172a; border: 1px solid #334155; position: relative; }
-        .report-grid::before { content: ''; position: absolute; top: -2px; left: -2px; width: 12px; height: 12px; border-top: 3px solid #f59e0b; border-left: 3px solid #f59e0b; z-index: 10; }
-        .report-grid::after { content: ''; position: absolute; bottom: -2px; right: -2px; width: 12px; height: 12px; border-bottom: 3px solid #f59e0b; border-right: 3px solid #f59e0b; z-index: 10; }
-        
-        .report-cell { 
-            padding: 22px 10px; 
-            border: 0.5px solid #1e293b; 
-            display: flex; flex-direction: column; align-items: center; justify-content: center; 
-            min-height: 110px; 
-            background-color: #0f172a; /* Solid background for stable screenshots */
-        }
-        
-        /* Input & Interactive Elements */
+        .report-grid::before { content: ''; position: absolute; top: -2px; left: -2px; width: 12px; height: 12px; border-top: 3px solid #f59e0b; border-left: 3px solid #f59e0b; }
+        .report-grid::after { content: ''; position: absolute; bottom: -2px; right: -2px; width: 12px; height: 12px; border-bottom: 3px solid #f59e0b; border-right: 3px solid #f59e0b; }
+        .report-cell { padding: 22px 10px; border: 0.5px solid #1e293b; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 110px; background-color: #0f172a; }
         input:focus { box-shadow: 0 0 15px rgba(245, 158, 11, 0.2); border-color: #f59e0b !important; }
-        input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
-        
-        .btn-shadow { box-shadow: 0 4px 0px 0px rgba(0,0,0,0.5); transition: all 0.1s; }
+        .btn-shadow { box-shadow: 0 4px 0px 0px rgba(0,0,0,0.5); }
         .btn-shadow:active { transform: translateY(2px); box-shadow: 0 1px 0px 0px rgba(0,0,0,0.5); }
-        
-        /* Animations */
-        .fade-show { display: block !important; animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        
-        .error-shake { animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both; }
-        @keyframes shake { 10%, 90% { transform: translate3d(-1px, 0, 0); } 20%, 80% { transform: translate3d(2px, 0, 0); } 30%, 50%, 70% { transform: translate3d(-4px, 0, 0); } 40%, 60% { transform: translate3d(4px, 0, 0); } }
+        .fade-show { display: block !important; animation: fadeIn 0.4s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        /* Hide arrows for Chrome, Safari, Edge, Opera */
+        input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
     </style>
 </head>
-<body class="min-h-screen flex justify-center selection:bg-ind-accent selection:text-ind-deep">
+<body class="min-h-screen flex justify-center">
 
-<div id="capture-area" class="w-full max-w-md bg-ind-deep min-h-screen flex flex-col p-6 border-x border-slate-800 shadow-2xl relative">
+<div id="capture-area" class="w-full max-w-md bg-ind-deep min-h-screen flex flex-col p-6 border-x border-slate-800 shadow-2xl">
     
-    <header class="flex justify-between items-start mb-8">
+    <header class="flex justify-between items-start mb-6">
         <div class="flex gap-3">
             <div class="w-1.5 bg-ind-accent"></div>
             <div>
-                <h1 id="main-title" class="text-3xl font-black text-white leading-tight tracking-tighter uppercase italic"></h1>
+                <h1 id="main-title" class="text-3xl font-black text-white leading-tight italic uppercase tracking-tighter"></h1>
                 <div class="flex items-center gap-2 mt-2">
-                    <span class="text-[10px] bg-slate-800 text-slate-400 px-2 py-0.5 rounded font-bold tracking-widest uppercase">Industrial System V3.0</span>
-                    <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+                    <span class="text-[10px] bg-slate-800 text-slate-400 px-2 py-0.5 rounded font-bold tracking-widest">SYSTEM V3.1 PRO</span>
                 </div>
             </div>
         </div>
-        <button id="lang-btn" onclick="app.toggleLanguage()" class="text-[11px] border border-slate-700 text-slate-400 px-3 py-1 hover:bg-slate-800 transition uppercase font-black rounded-sm">EN/中</button>
+        <button onclick="app.toggleLanguage()" class="text-[11px] border border-slate-700 text-slate-400 px-3 py-1 hover:bg-slate-800 transition rounded font-bold">EN/中</button>
     </header>
+
+    <div class="flex gap-2 mb-6 overflow-x-auto pb-2">
+        <button onclick="app.applyPreset(55, 15550, 40)" class="whitespace-nowrap bg-slate-800 text-slate-400 text-[10px] px-3 py-1.5 rounded-full hover:bg-slate-700 border border-slate-700 transition font-bold uppercase tracking-tighter">快速載入：標準捲揚</button>
+        <button onclick="app.applyPreset(80, 20000, 60)" class="whitespace-nowrap bg-slate-800 text-slate-400 text-[10px] px-3 py-1.5 rounded-full hover:bg-slate-700 border border-slate-700 transition font-bold uppercase tracking-tighter">快速載入：重型捲揚</button>
+    </div>
 
     <main class="flex-grow space-y-5">
         <div class="grid grid-cols-2 gap-x-4 gap-y-4">
-            <div>
-                <label id="lbl-radius" class="text-[11px] font-bold text-slate-500 uppercase tracking-widest mb-1 block"></label>
-                <input type="number" inputmode="decimal" id="radius" class="w-full bg-ind-panel border border-slate-800 rounded-sm p-3 text-xl text-white outline-none font-mono font-bold border-b-2 border-b-slate-700 transition-colors placeholder-slate-700" placeholder="0">
-            </div>
-            <div>
-                <label id="lbl-speed" class="text-[11px] font-bold text-slate-500 uppercase tracking-widest mb-1 block"></label>
-                <input type="number" inputmode="decimal" id="speed" class="w-full bg-ind-panel border border-slate-800 rounded-sm p-3 text-xl text-white outline-none font-mono font-bold border-b-2 border-b-slate-700 transition-colors placeholder-slate-700" placeholder="0">
-            </div>
-            <div>
-                <label id="lbl-ratio" class="text-[11px] font-bold text-slate-500 uppercase tracking-widest mb-1 block"></label>
-                <input type="number" inputmode="decimal" id="ratio" class="w-full bg-ind-panel border border-slate-800 rounded-sm p-3 text-xl text-white outline-none font-mono font-bold border-b-2 border-b-slate-700 transition-colors placeholder-slate-700" placeholder="0">
-            </div>
-            <div>
-                <label id="lbl-gear" class="text-[11px] font-bold text-slate-500 uppercase tracking-widest mb-1 block"></label>
-                <select id="gearType" class="w-full bg-ind-panel border border-slate-800 rounded-sm p-3 text-lg text-white outline-none appearance-none font-bold border-b-2 border-b-slate-700 cursor-pointer"></select>
-            </div>
+            <div><label id="lbl-radius" class="text-[11px] font-bold text-slate-500 uppercase tracking-widest mb-1 block"></label><input type="number" id="radius" class="w-full bg-ind-panel border border-slate-800 rounded-sm p-3 text-xl text-white outline-none font-mono font-bold border-b-2 border-b-slate-700"></div>
+            <div><label id="lbl-speed" class="text-[11px] font-bold text-slate-500 uppercase tracking-widest mb-1 block"></label><input type="number" id="speed" class="w-full bg-ind-panel border border-slate-800 rounded-sm p-3 text-xl text-white outline-none font-mono font-bold border-b-2 border-b-slate-700"></div>
+            <div><label id="lbl-ratio" class="text-[11px] font-bold text-slate-500 uppercase tracking-widest mb-1 block"></label><input type="number" id="ratio" class="w-full bg-ind-panel border border-slate-800 rounded-sm p-3 text-xl text-white outline-none font-mono font-bold border-b-2 border-b-slate-700"></div>
+            <div><label id="lbl-gear" class="text-[11px] font-bold text-slate-500 uppercase tracking-widest mb-1 block"></label><select id="gearType" class="w-full bg-ind-panel border border-slate-800 rounded-sm p-3 text-lg text-white outline-none appearance-none font-bold border-b-2 border-b-slate-700"></select></div>
         </div>
         
-        <div>
-            <label id="lbl-safety" class="text-[11px] font-bold text-slate-500 uppercase tracking-widest mb-1 block"></label>
-            <select id="safety" class="w-full bg-ind-panel border border-slate-800 rounded-sm p-3 text-lg text-white outline-none font-bold border-b-2 border-b-slate-700 cursor-pointer"></select>
+        <div><label id="lbl-safety" class="text-[11px] font-bold text-slate-500 uppercase tracking-widest mb-1 block"></label><select id="safety" class="w-full bg-ind-panel border border-slate-800 rounded-sm p-3 text-lg text-white outline-none font-bold border-b-2 border-b-slate-700"></select></div>
+
+        <div class="flex bg-ind-panel border border-slate-800 p-1 rounded">
+            <button onclick="app.setMode('power')" id="btn-mode-p" class="flex-1 py-3 text-sm font-black uppercase tracking-widest rounded transition-colors">推算功率</button>
+            <button onclick="app.setMode('load')" id="btn-mode-l" class="flex-1 py-3 text-sm font-black uppercase tracking-widest text-slate-600 rounded transition-colors">推算荷重</button>
         </div>
 
-        <div class="flex bg-ind-panel border border-slate-800 p-1 rounded select-none">
-            <button onclick="app.setMode('power')" id="btn-mode-p" class="flex-1 py-3 text-sm font-black uppercase tracking-widest rounded transition-all">推算馬達功率</button>
-            <button onclick="app.setMode('load')" id="btn-mode-l" class="flex-1 py-3 text-sm font-black uppercase tracking-widest text-slate-600 rounded transition-all">推算容許荷重</button>
-        </div>
-
-        <div class="bg-slate-900 p-5 border border-slate-800 transition-colors hover:border-slate-700">
+        <div class="bg-slate-900 p-5 border border-slate-800">
             <div class="flex justify-between items-center mb-3">
-                <label id="lbl-dynamic-input" class="text-xs font-black text-ind-accent uppercase tracking-[0.2em]"></label>
+                <label id="lbl-dynamic-input" class="text-xs font-black text-ind-accent uppercase tracking-widest"></label>
                 <div id="unit-toggle" class="hidden flex text-[10px] font-bold border border-slate-700 rounded overflow-hidden">
-                    <button id="btn-kw" onclick="app.setPowerUnit('kW')" class="px-3 py-1 transition-colors">kW</button>
-                    <button id="btn-hp" onclick="app.setPowerUnit('HP')" class="px-3 py-1 transition-colors">HP</button>
+                    <button id="btn-kw" onclick="app.setPowerUnit('kW')" class="px-3 py-1">kW</button>
+                    <button id="btn-hp" onclick="app.setPowerUnit('HP')" class="px-3 py-1">HP</button>
                 </div>
             </div>
-            <input type="number" inputmode="decimal" id="mainInput" class="w-full bg-transparent text-6xl font-mono text-white outline-none font-black text-center tracking-tighter placeholder-slate-800" placeholder="0">
+            <input type="number" id="mainInput" class="w-full bg-transparent text-6xl font-mono text-white outline-none font-black text-center tracking-tighter" placeholder="0">
         </div>
-
-        <div id="error-msg" class="hidden text-center text-red-500 text-xs font-bold bg-red-500/10 py-2 rounded border border-red-500/20"></div>
 
         <div id="report-container" class="hidden">
             <div class="flex items-center gap-3 mb-5 mt-4">
                 <div class="w-2.5 h-8 bg-ind-accent"></div>
-                <span id="lbl-report" class="text-2xl font-black text-white tracking-[0.1em] uppercase"></span>
+                <span id="lbl-report" class="text-2xl font-black text-white tracking-widest uppercase"></span>
             </div>
-            
             <div id="report-grid" class="report-grid shadow-2xl">
-                <div class="report-cell">
-                    <span id="lbl-res-rpm" class="text-sm text-slate-300 font-bold uppercase mb-3"></span>
-                    <span id="res-rpm" class="text-3xl font-mono font-bold text-white">---</span>
-                    <span id="rpm-warning" class="hidden mt-1"></span>
-                </div>
-                <div class="report-cell">
-                    <span id="lbl-res-load" class="text-sm text-slate-300 font-bold uppercase mb-3"></span>
-                    <span id="res-load" class="text-3xl font-mono font-bold text-white">---</span>
-                </div>
-                
-                <div class="report-cell">
-                    <span id="lbl-res-torque" class="text-sm text-slate-300 font-bold uppercase mb-3"></span>
-                    <span id="res-torque" class="text-3xl font-mono font-bold text-white">---</span>
-                </div>
-                <div class="report-cell">
-                    <span id="lbl-res-sf" class="text-sm text-slate-300 font-bold uppercase mb-3"></span>
-                    <span id="res-sf" class="text-3xl font-mono font-bold text-ind-accent">---</span>
-                </div>
-                
+                <div class="report-cell"><span id="lbl-res-rpm" class="text-sm text-slate-300 font-bold uppercase mb-3"></span><span id="res-rpm" class="text-3xl font-mono font-bold text-white">---</span><span id="rpm-warning" class="hidden mt-1"></span></div>
+                <div class="report-cell"><span id="lbl-res-load" class="text-sm text-slate-300 font-bold uppercase mb-3"></span><span id="res-load" class="text-3xl font-mono font-bold text-white">---</span></div>
+                <div class="report-cell"><span id="lbl-res-torque" class="text-sm text-slate-300 font-bold uppercase mb-3"></span><span id="res-torque" class="text-3xl font-mono font-bold text-white">---</span></div>
+                <div class="report-cell"><span id="lbl-res-sf" class="text-sm text-slate-300 font-bold uppercase mb-3"></span><span id="res-sf" class="text-3xl font-mono font-bold text-ind-accent">---</span></div>
                 <div class="report-cell col-span-2 py-12 border-t border-slate-800">
                     <span id="lbl-res-power" class="text-sm text-slate-300 font-bold uppercase mb-4"></span>
-                    <span id="res-power" class="text-4xl font-mono font-bold leading-none flex items-baseline justify-center gap-1">---</span>
+                    <span id="res-power" class="text-4xl font-mono font-bold leading-none flex items-baseline gap-1">---</span>
                 </div>
+            </div>
+            
+            <div id="history-container" class="mt-6 pt-6 border-t border-slate-900 overflow-hidden">
+                <h3 class="text-[10px] font-black text-slate-600 uppercase tracking-widest mb-3">歷史紀錄 (Recent History)</h3>
+                <div id="history-list" class="space-y-2"></div>
             </div>
         </div>
     </main>
 
-    <div class="grid grid-cols-3 gap-4 mt-8 pt-6 border-t border-slate-900">
-        <button onclick="app.calculate()" class="bg-green-600 hover:bg-green-500 text-white py-4 rounded font-black text-sm btn-shadow uppercase tracking-widest flex justify-center items-center">
-            <span id="btn-text-calc"></span>
-        </button>
-        <button onclick="app.resetTool()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 py-4 rounded font-black text-sm btn-shadow uppercase tracking-widest flex justify-center items-center">
-            <span id="btn-text-reset"></span>
-        </button>
-        <button onclick="app.generateReport()" class="bg-blue-600 hover:bg-blue-500 text-white py-4 rounded font-black text-sm btn-shadow uppercase tracking-widest flex justify-center items-center">
-            <span id="btn-text-report"></span>
-        </button>
+    <div class="grid grid-cols-3 gap-4 mt-8 pt-6 border-t border-slate-900 no-capture">
+        <button onclick="app.calculate()" class="bg-green-600 hover:bg-green-500 text-white py-4 rounded font-black text-sm btn-shadow uppercase">計算</button>
+        <button onclick="location.reload()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 py-4 rounded font-black text-sm btn-shadow uppercase">重置</button>
+        <button onclick="app.generateReport()" class="bg-blue-600 hover:bg-blue-500 text-white py-4 rounded font-black text-sm btn-shadow uppercase">截圖</button>
     </div>
-    
-    <footer class="mt-10 text-center pb-8">
-        <p class="text-xs text-slate-500 font-bold tracking-tight opacity-70">
-            Copyright © 2025 ChangYi,Wu. All rights reserved.
-        </p>
-    </footer>
 </div>
 
 <script>
-/**
- * Industrial Motor Load Calculator V3.0
- * Structured for maintainability and readability.
- */
 const app = {
-    // Constants
     G: 9.80665,
-    HP_TO_KW: 0.7457,
-    
-    // State
-    state: {
-        mode: 'power', // 'power' or 'load'
-        powerUnit: 'kW', // 'kW' or 'HP'
-        lang: 'zh'
-    },
-
-    // UI Elements Cache
-    el: {},
-
-    // Translations Dictionary
+    state: { mode: 'power', powerUnit: 'kW', lang: 'zh', history: [] },
     translations: {
         zh: {
             title: "垂直捲線機構<br><span class='text-ind-accent not-italic'>馬達負載計算</span>",
@@ -207,9 +132,6 @@ const app = {
             modeL: "推算容許荷重", inputLoad: "目標荷重 (kg)", inputPower: "馬達功率",
             report: "計算報告", resRPM: "馬達轉速 (RPM)", resSF: "安全係數 (S.F.)",
             resLoad: "容許荷重 (kg)", resPower: "馬達功率", resTorque: "輸出扭矩 (N-m)",
-            btnCalc: "開始計算", btnReset: "重新計算", btnReport: "畫面截圖",
-            rpmHigh: "⚠️ 轉速過高", rpmLow: "⚠️ 轉速偏低", rpmCrit: "⚠️ 危險轉速",
-            errorEmpty: "請填寫所有欄位並確保數值大於 0",
             gearOptions: [{ val: "0.95", text: "齒輪 (95%)" }, { val: "0.90", text: "擺線 (90%)" }, { val: "0.70", text: "渦輪 (70%)" }],
             sfOptions: [{ val: "1.5", text: "1.5 (標準)" }, { val: "2.0", text: "2.0 (重負載)" }]
         },
@@ -220,236 +142,110 @@ const app = {
             modeL: "Load Calc", inputLoad: "Target Load (kg)", inputPower: "Motor Power",
             report: "CALC REPORT", resRPM: "Motor RPM", resSF: "Factor (S.F.)",
             resLoad: "Allow. Load (kg)", resPower: "Required Power", resTorque: "Torque (N-m)",
-            btnCalc: "CALCULATE", btnReset: "RESET", btnReport: "OUTPUT",
-            rpmHigh: "⚠️ HI-RPM", rpmLow: "⚠️ LO-RPM", rpmCrit: "⚠️ DANGER",
-            errorEmpty: "Please fill in all fields with valid numbers",
             gearOptions: [{ val: "0.95", text: "Gear (95%)" }, { val: "0.90", text: "Cycloid (90%)" }, { val: "0.70", text: "Worm (70%)" }],
             sfOptions: [{ val: "1.5", text: "1.5 (Std)" }, { val: "2.0", text: "2.0 (Heavy)" }]
         }
     },
-
-    // Initialization
     init() {
-        // Cache elements for performance
-        const ids = ['radius', 'speed', 'ratio', 'gearType', 'safety', 'mainInput', 'report-container', 'error-msg', 'btn-kw', 'btn-hp', 'lang-btn'];
-        ids.forEach(id => this.el[id] = document.getElementById(id));
-        
         this.populateDropdowns();
         this.updateUI();
+        this.setMode('power');
     },
-
+    applyPreset(r, s, i) {
+        document.getElementById('radius').value = r;
+        document.getElementById('speed').value = s;
+        document.getElementById('ratio').value = i;
+        this.calculate();
+    },
     populateDropdowns() {
-        const t = this.translations[this.state.lang];
-        const { gearType, safety } = this.el;
-        const currentGear = gearType.value;
-        const currentSafety = safety.value;
-
-        gearType.innerHTML = "";
-        t.gearOptions.forEach(o => gearType.add(new Option(o.text, o.val)));
-        if (currentGear) gearType.value = currentGear;
-
-        safety.innerHTML = "";
-        t.sfOptions.forEach(o => safety.add(new Option(o.text, o.val)));
-        safety.value = currentSafety || "1.5";
+        const t = this.translations[this.state.lang], gS = document.getElementById('gearType'), sS = document.getElementById('safety');
+        gS.innerHTML = ""; t.gearOptions.forEach(o => gS.add(new Option(o.text, o.val)));
+        sS.innerHTML = ""; t.sfOptions.forEach(o => sS.add(new Option(o.text, o.val)));
+        sS.value = "1.5";
     },
-
-    // Logic Actions
     toggleLanguage() {
         this.state.lang = (this.state.lang === 'zh') ? 'en' : 'zh';
-        this.populateDropdowns();
-        this.updateUI();
-        if (this.el['report-container'].classList.contains('fade-show')) this.calculate();
+        this.populateDropdowns(); this.updateUI();
+        if(document.getElementById('report-container').classList.contains('fade-show')) this.calculate();
     },
-
-    setMode(mode) {
-        this.state.mode = mode;
-        const isPower = mode === 'power';
-        
-        // Update Button Styles
-        document.getElementById('btn-mode-p').className = isPower 
-            ? "flex-1 py-3 text-sm font-black uppercase tracking-widest rounded bg-ind-accent text-ind-deep" 
-            : "flex-1 py-3 text-sm font-black uppercase tracking-widest text-slate-600 rounded hover:text-slate-400";
-            
-        document.getElementById('btn-mode-l').className = !isPower 
-            ? "flex-1 py-3 text-sm font-black uppercase tracking-widest rounded bg-ind-accent text-ind-deep" 
-            : "flex-1 py-3 text-sm font-black uppercase tracking-widest text-slate-600 rounded hover:text-slate-400";
-            
-        document.getElementById('unit-toggle').classList.toggle('hidden', isPower);
+    setMode(m) {
+        this.state.mode = m;
+        const isP = m === 'power';
+        document.getElementById('btn-mode-p').className = isP ? "flex-1 py-3 text-sm font-black bg-ind-accent text-ind-deep rounded" : "flex-1 py-3 text-sm font-black text-slate-600 rounded";
+        document.getElementById('btn-mode-l').className = !isP ? "flex-1 py-3 text-sm font-black bg-ind-accent text-ind-deep rounded" : "flex-1 py-3 text-sm font-black text-slate-600 rounded";
+        document.getElementById('unit-toggle').classList.toggle('hidden', isP);
         this.updateUI();
-        this.el['report-container'].classList.remove('fade-show');
-        this.hideError();
     },
-
-    setPowerUnit(unit) {
-        this.state.powerUnit = unit;
-        const isKW = unit === 'kW';
-        this.el['btn-kw'].className = isKW ? "px-3 py-1 bg-slate-500 text-white uppercase" : "px-3 py-1 text-slate-400 uppercase hover:text-white";
-        this.el['btn-hp'].className = !isKW ? "px-3 py-1 bg-slate-500 text-white uppercase" : "px-3 py-1 text-slate-400 uppercase hover:text-white";
+    setPowerUnit(u) {
+        this.state.powerUnit = u;
+        document.getElementById('btn-kw').className = u === 'kW' ? "px-3 py-1 bg-slate-500 text-white" : "px-3 py-1 text-slate-400";
+        document.getElementById('btn-hp').className = u === 'HP' ? "px-3 py-1 bg-slate-500 text-white" : "px-3 py-1 text-slate-400";
         this.updateUI();
-        if (this.el['report-container'].classList.contains('fade-show')) this.calculate();
+        if(document.getElementById('report-container').classList.contains('fade-show')) this.calculate();
     },
-
     updateUI() {
         const t = this.translations[this.state.lang];
-        const ids = {
-            'main-title': t.title, 'lbl-radius': t.radius, 'lbl-speed': t.speed,
-            'lbl-ratio': t.ratio, 'lbl-gear': t.gear, 'lbl-safety': t.safety,
-            'btn-mode-p': t.modeP, 'btn-mode-l': t.modeL, 'lbl-report': t.report,
-            'lbl-res-rpm': t.resRPM, 'lbl-res-sf': t.resSF, 'lbl-res-load': t.resLoad,
-            'lbl-res-power': t.resPower, 'lbl-res-torque': t.resTorque,
-            'btn-text-calc': t.btnCalc, 'btn-text-reset': t.btnReset, 'btn-text-report': t.btnReport
-        };
-
-        for (const [id, text] of Object.entries(ids)) {
-            const el = document.getElementById(id);
-            if(el) el.innerHTML = text;
-        }
-
-        const dynamicLabel = (this.state.mode === 'power') ? t.inputLoad : `${t.inputPower} (${this.state.powerUnit})`;
-        document.getElementById('lbl-dynamic-input').innerText = dynamicLabel;
+        document.getElementById('main-title').innerHTML = t.title;
+        document.getElementById('lbl-radius').innerText = t.radius; document.getElementById('lbl-speed').innerText = t.speed;
+        document.getElementById('lbl-ratio').innerText = t.ratio; document.getElementById('lbl-gear').innerText = t.gear;
+        document.getElementById('lbl-safety').innerText = t.safety; document.getElementById('lbl-report').innerText = t.report;
+        document.getElementById('lbl-res-rpm').innerText = t.resRPM; document.getElementById('lbl-res-sf').innerText = t.resSF;
+        document.getElementById('lbl-res-load').innerText = t.resLoad; document.getElementById('lbl-res-power').innerText = t.resPower;
+        document.getElementById('lbl-res-torque').innerText = t.resTorque;
+        document.getElementById('lbl-dynamic-input').innerText = (this.state.mode === 'power') ? t.inputLoad : `${t.inputPower} (${this.state.powerUnit})`;
     },
-
-    showError(msg) {
-        const errEl = this.el['error-msg'];
-        errEl.innerText = msg;
-        errEl.classList.remove('hidden');
-        errEl.classList.add('error-shake');
-        setTimeout(() => errEl.classList.remove('error-shake'), 500);
-    },
-
-    hideError() {
-        this.el['error-msg'].classList.add('hidden');
-    },
-
-    formatNum(num, dec = 2) {
-        return parseFloat(num.toFixed(dec)).toString();
-    },
-
     calculate() {
-        const { radius, speed, ratio, gearType, safety, mainInput } = this.el;
-        const r = parseFloat(radius.value);
-        const s = parseFloat(speed.value);
-        const i = parseFloat(ratio.value);
-        const eff = parseFloat(gearType.value);
-        const sf = parseFloat(safety.value);
-        const mainVal = parseFloat(mainInput.value);
-
-        // Validation
-        if (!r || !s || !i || !mainVal || r <= 0 || s <= 0 || i <= 0 || mainVal <= 0) {
-            this.showError(this.translations[this.state.lang].errorEmpty);
-            return;
-        }
-        this.hideError();
-
-        // 1. RPM Calculation
-        const motorRPM = (s / (2 * Math.PI * r)) * i;
-        this.renderRPM(motorRPM);
-
-        // 2. Power & Load Calculation
-        const velocityMS = s / 1000 / 60; // m/s
-        let loadKg = 0, powerKW = 0;
-
-        const resLoadEl = document.getElementById('res-load');
-        const resPowerEl = document.getElementById('res-power');
-
-        if (this.state.mode === 'power') {
-            loadKg = mainVal;
-            powerKW = (loadKg * this.G * velocityMS / (1000 * eff)) * sf;
-            
-            // Styling for Power Mode
-            resLoadEl.className = "text-3xl font-mono font-bold text-white";
-            // Power is Red
-            this.renderPowerText(powerKW, 'red');
-        } else {
-            powerKW = (this.state.powerUnit === 'HP') ? mainVal * this.HP_TO_KW : mainVal;
-            loadKg = (powerKW * 1000 * eff) / (velocityMS * sf * this.G);
-            
-            // Styling for Load Mode
-            resLoadEl.className = "text-3xl font-mono font-bold text-red-500";
-            // Power is White
-            this.renderPowerText(powerKW, 'white');
-        }
-
-        // 3. Render Results
-        document.getElementById('res-sf').innerText = this.formatNum(sf, 1);
-        resLoadEl.innerText = this.formatNum(loadKg, 1);
-        document.getElementById('res-torque').innerText = this.formatNum(loadKg * this.G * (r / 1000), 1);
+        const r = parseFloat(document.getElementById('radius').value), s = parseFloat(document.getElementById('speed').value), i = parseFloat(document.getElementById('ratio').value), eff = parseFloat(document.getElementById('gearType').value), sf = parseFloat(document.getElementById('safety').value), val = parseFloat(document.getElementById('mainInput').value);
+        if(!r || !s || !i || !val) return alert(this.state.lang==='zh'?"請完整輸入資料":"Please fill all fields");
         
-        this.el['report-container'].classList.add('fade-show');
-    },
-
-    renderRPM(rpm) {
-        const t = this.translations[this.state.lang];
-        const el = document.getElementById('res-rpm');
+        const rpm = (s / (2 * Math.PI * r)) * i;
+        document.getElementById('res-rpm').innerText = rpm.toFixed(1);
         const warn = document.getElementById('rpm-warning');
-        
-        el.innerText = this.formatNum(rpm, 1);
-        warn.className = "hidden mt-1";
-        
-        if (rpm > 1800) {
-            warn.innerText = t.rpmHigh;
-            warn.className = "text-[10px] font-bold text-ind-accent block mt-1";
+        warn.className = rpm > 1800 ? "text-[10px] font-bold text-ind-accent block" : "hidden";
+        warn.innerText = this.translations[this.state.lang].rpmHigh;
+
+        let load = 0, pKW = 0;
+        const v = s / 60000;
+        if(this.state.mode === 'power') {
+            load = val; pKW = (load * this.G * v / (eff)) * sf / 1000;
+            this.renderPower(pKW, 'red');
+            document.getElementById('res-load').className = "text-3xl font-mono font-bold text-white";
+        } else {
+            pKW = this.state.powerUnit === 'HP' ? val * 0.7457 : val;
+            load = (pKW * 1000 * eff) / (v * sf * this.G);
+            this.renderPower(pKW, 'white');
+            document.getElementById('res-load').className = "text-3xl font-mono font-bold text-red-500";
         }
-        if (rpm > 3600) {
-            warn.innerText = t.rpmCrit;
-            warn.className = "text-[10px] font-bold text-red-500 animate-pulse block mt-1";
-        }
-        warn.classList.toggle('hidden', rpm <= 1800);
+        document.getElementById('res-load').innerText = load.toFixed(1);
+        document.getElementById('res-torque').innerText = (load * this.G * r / 1000).toFixed(1);
+        document.getElementById('res-sf').innerText = sf.toFixed(1);
+        document.getElementById('report-container').classList.add('fade-show');
+        this.addHistory(load, pKW);
     },
-
-    renderPowerText(kw, colorTheme) {
-        const hp = kw / this.HP_TO_KW;
-        const resPowerEl = document.getElementById('res-power');
-        
-        const valClass = colorTheme === 'red' ? "text-red-500" : "text-white";
-        const unitClass = colorTheme === 'red' ? "text-sm text-red-900 font-bold ml-1" : "text-sm text-slate-500 font-bold ml-1";
-        
-        resPowerEl.innerHTML = `
-            <div class="flex items-baseline">
-                <span class="${valClass}">${this.formatNum(hp, 2)}</span>
-                <span class="${unitClass}">HP</span>
-            </div>
-            <span class="text-slate-700 mx-3 italic opacity-50 text-2xl font-light">/</span>
-            <div class="flex items-baseline">
-                <span class="${valClass}">${this.formatNum(kw, 2)}</span>
-                <span class="${unitClass}">kW</span>
-            </div>
-        `;
+    renderPower(p, color) {
+        const hp = p / 0.7457, res = document.getElementById('res-power'), valC = color === 'red' ? 'text-red-500' : 'text-white', unitC = color === 'red' ? 'text-sm text-red-900 font-bold ml-1' : 'text-sm text-slate-500 font-bold ml-1';
+        res.innerHTML = `<span class="${valC}">${hp.toFixed(2)}</span><span class="${unitC}">HP</span><span class="mx-3 opacity-20 text-white italic">/</span><span class="${valC}">${p.toFixed(2)}</span><span class="${unitC}">kW</span>`;
     },
-
-    resetTool() {
-        location.reload();
+    addHistory(load, p) {
+        this.state.history.unshift({ load: load.toFixed(1), p: p.toFixed(2), time: new Date().toLocaleTimeString() });
+        if(this.state.history.length > 3) this.state.history.pop();
+        const list = document.getElementById('history-list');
+        list.innerHTML = this.state.history.map(h => `<div class="bg-slate-900/50 p-2 rounded text-[10px] flex justify-between"><span class="text-slate-500">${h.time}</span><span class="text-white font-mono">${h.load}kg / ${h.p}kW</span></div>`).join('');
     },
-
     generateReport() {
-        const btn = this.el['lang-btn'];
-        btn.style.display = 'none';
+        const area = document.querySelector("#capture-area");
+        // Hide history and buttons during capture
+        document.getElementById('history-container').style.display = 'none';
+        document.querySelectorAll('.no-capture').forEach(el => el.style.display = 'none');
         
-        html2canvas(document.querySelector("#capture-area"), { 
-            backgroundColor: "#020617", 
-            scale: 2, 
-            useCORS: true, 
-            logging: false,
-            windowWidth: 375,
-            onclone: (clonedDoc) => {
-                const grid = clonedDoc.getElementById('report-grid');
-                if(grid) grid.style.backgroundColor = '#0f172a';
-            }
-        }).then(canvas => {
-            const link = document.createElement('a'); 
-            link.download = `Industrial_V3.0_${new Date().toISOString().slice(0,10)}.png`; 
-            link.href = canvas.toDataURL("image/png"); 
-            link.click();
-            btn.style.display = 'block';
-        }).catch(err => {
-            console.error("Screenshot failed:", err);
-            alert("截圖失敗，請檢查瀏覽器設定。");
-            btn.style.display = 'block';
+        html2canvas(area, { backgroundColor: "#020617", scale: 2 }).then(canvas => {
+            const link = document.createElement('a'); link.download = `Report_${Date.now()}.png`; link.href = canvas.toDataURL(); link.click();
+            // Restore visibility
+            document.getElementById('history-container').style.display = 'block';
+            document.querySelectorAll('.no-capture').forEach(el => el.style.display = 'grid');
         });
     }
 };
-
-// Start the App
 document.addEventListener('DOMContentLoaded', () => app.init());
 </script>
 </body>
