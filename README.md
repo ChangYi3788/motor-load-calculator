@@ -77,7 +77,7 @@ Since this is a **Single File Application**, no build process is required.
 ### Method 1: Run Locally (本地運行)
 1.  Clone this repository:
     ```bash
-    git clone [https://github.com/YourUsername/motor-load-calculator.git](https://github.com/YourUsername/motor-load-calculator.git)
+    git clone [https://changyi3788.github.io/motor-load-calculator/](https://changyi3788.github.io/motor-load-calculator/)
     ```
 2.  Open `index.html` directly in your browser.
 
