@@ -1,6 +1,6 @@
 # 🏭 Vertical Winch Motor Load Calculator | 垂直捲線機構馬達負載計算工具
 
-![Project Status](https://img.shields.io/badge/status-active-brightgreen) ![License](https://img.shields.io/badge/license-MIT-blue) ![Version](https://img.shields.io/badge/version-3.0-orange)
+![Project Status](https://img.shields.io/badge/status-active-brightgreen) ![License](https://img.shields.io/badge/license-MIT-blue) ![Version](https://img.shields.io/badge/version-3.1-orange)
 
 > A professional web-based tool designed for mechanical engineers to calculate motor power and allowable load for vertical lifting mechanisms.
 > 
@@ -10,17 +10,17 @@
 
 ## 🚀 Live Demo | 線上預覽
 
-👉 **[Click here to use the tool / 點擊此處使用工具](https://changyi3788.github.io/motor-load-calculator/)**
-
+👉 **[Launch Application / 啟動應用程式](https://changyi3788.github.io/motor-load-calculator/)**
 
 ---
 
 ## 🖼️ Screenshots | 介面預覽
 
-| Desktop / PC 介面 | Mobile / 手機介面 |
-|:---:|:---:|
-| <img src="screenshot-desktop.png" alt="Desktop View" width="400"> | <img src="screenshot-mobile.png" alt="Mobile View" width="200"> |
+| Calculation Report / 計算報告截圖範例 |
+|:---:|
+| <img src="screenshot-desktop.png" alt="Report Screenshot" width="500"> |
 
+*(Note: Please ensure you have uploaded 'screenshot-desktop.png' to your repository.)*
 
 ---
 
@@ -32,64 +32,54 @@
     * **Load Calculation (推算荷重)**: Calculate maximum allowable load based on existing motor power.
 * **Unit Conversion (單位切換)**: Instant toggling between **kW** and **HP** (Horsepower).
 * **Real-time RPM Analysis (即時轉速分析)**: Automatically calculates output RPM and warns about dangerous speeds (>1800/3600 RPM).
-* **Report Generation (報告生成)**: One-click export to a high-quality **PNG image** with a clean, industrial-style layout, perfect for documentation.
+* **Report Generation (報告生成)**: One-click export to a high-quality **PNG image** with an industrial-style layout.
+* **Presets (快速載入)**: Built-in standard configurations for quick testing.
 
 ### 🎨 UI/UX Design (介面設計)
-* **Industrial Dark Theme (工業深色主題)**: Optimized for visual comfort in various lighting conditions.
-* **Fully Responsive (RWD 響應式)**: Works perfectly on Desktop, Tablets, and Mobile phones.
-* **Input Optimization (輸入優化)**: Numeric keypads are automatically triggered on mobile devices.
-* **Visual Feedback (視覺回饋)**: Clear error messages and interactive button states.
+* **Industrial Dark Theme**: Optimized for visual comfort.
+* **Fully Responsive (RWD)**: Works perfectly on Desktop and Mobile.
+* **History Log**: Keeps track of recent calculations for quick comparison.
 
 ---
 
 ## 📐 Calculation Logic | 計算邏輯
 
 This tool uses standard mechanical engineering formulas for vertical lifting:
-本工具採用標準垂直捲揚機構計算公式：
+本工具採用標準機械工程垂直捲揚公式：
 
-### 1. Velocity (提升速度換算)
-$$V (m/s) = \frac{Speed (mm/min)}{60 \times 1000}$$
+### 核心物理公式 (Physical Formulas)
 
-### 2. Motor Power (馬達功率)
-$$P (kW) = \frac{Load (kg) \times 9.8 \times V (m/s)}{1000 \times \eta} \times S.F.$$
+* **提升速度 (Velocity):**
+    $$V = \frac{v_{min}}{60 \times 1000} \quad (m/s)$$
+* **馬達推算功率 (Required Power):**
+    $$P_{kW} = \frac{m \cdot g \cdot V}{\eta \cdot 1000} \cdot S.F.$$
+* **輸出扭矩 (Output Torque):**
+    $$T = m \cdot g \cdot r \quad (N\cdot m)$$
 
-* **$\eta$ (Efficiency)**: Gear efficiency (e.g., Worm Gear 70%, Cycloid 90%).
-* **S.F. (Safety Factor)**: Typically 1.5 to 2.0 depending on the application.
+> Where $g \approx 9.81 m/s^2$, $\eta$ is transmission efficiency, $S.F.$ is safety factor, and $r$ is drum radius (meters).
 
 ---
 
 ## 🛠️ Tech Stack | 技術棧
 
-* **Core**: HTML5, Vanilla JavaScript (ES6+)
-* **Styling**: [Tailwind CSS](https://tailwindcss.com/) (CDN)
-* **Library**: [html2canvas](https://html2canvas.hertzen.com/) (For screenshot generation)
+* **Frontend**: HTML5, Vanilla JavaScript (ES6+)
+* **Styling**: [Tailwind CSS](https://tailwindcss.com/)
+* **Library**: [html2canvas](https://html2canvas.hertzen.com/)
 * **Deployment**: GitHub Pages
 
 ---
 
-## 📦 Installation & Usage | 安裝與使用
+## 📦 Installation | 安裝說明
 
-Since this is a **Single File Application**, no build process is required.
-由於本專案為單一文件應用，無需複雜的建置過程。
-
-### Method 1: Run Locally (本地運行)
-1.  Clone this repository:
-    ```bash
-    git clone [https://changyi3788.github.io/motor-load-calculator/](https://changyi3788.github.io/motor-load-calculator/)
-    ```
-2.  Open `index.html` directly in your browser.
-
-### Method 2: GitHub Pages (雲端部署)
-1.  Fork or Push this repository to your GitHub.
-2.  Go to **Settings** > **Pages**.
-3.  Select `main` branch as source and Save.
+This is a **Single File Application**. No build process is required.
+1. Clone the repository.
+2. Open `index.html` in any modern browser.
 
 ---
 
-## 📝 License | 授權條款
+## 📄 License | 授權條款
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-本專案採用 MIT 授權條款，詳情請參閱 [LICENSE](LICENSE) 文件。
+This project is licensed under the **MIT License**. See the [LICENSE](LICENSE) file for details.
 
 **Copyright © 2025 ChangYi, Wu. All rights reserved.**
 
@@ -97,7 +87,5 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 🤝 Contact | 聯絡資訊
 
-If you have any questions or suggestions, feel free to open an Issue.
-如有任何問題或建議，歡迎提交 Issue。
-
 * **Author**: ChangYi, Wu
+* **GitHub**: [changyi3788](https://github.com/changyi3788)
