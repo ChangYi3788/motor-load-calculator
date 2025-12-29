@@ -10,7 +10,7 @@
 
 ## 🚀 Live Demo | 線上預覽
 
-👉 **[Click here to use the tool / 點擊此處使用工具](https://您的帳號.github.io/repo名稱/)**
+👉 **[Click here to use the tool / 點擊此處使用工具](https://changyi3788.github.io/motor-load-calculator/)**
 
 *(Replace the link above after you activate GitHub Pages / 請在啟用 GitHub Pages 後替換上方連結)*
 
