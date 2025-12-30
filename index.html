@@ -4,15 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#020617">
-    <title>垂直捲線機構馬達負載計算系統 V4.4</title>
+    <title>馬達負載計算系統 V4.5 - Mobile Optimized</title>
     
-    <link rel="manifest" href="manifest.json">
-    <link rel="apple-touch-icon" href="icon-192.png">
-
-    <meta property="og:title" content="垂直捲線機構馬達負載計算系統 V4.4" />
-    <meta property="og:description" content="專業工程師必備：支援功率/荷重雙向推算、安全係數分析與自動選型建議。" />
-    <meta property="og:image" content="https://changyi3788.github.io/motor-load-calculator/preview.png" />
-
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script>
@@ -25,109 +18,105 @@
         body { background-color: #020617; background-image: radial-gradient(#1e293b 0.5px, transparent 0.5px); background-size: 20px 20px; font-family: 'Noto Sans TC', sans-serif; color: #cbd5e1; }
         .font-mono { font-family: 'JetBrains Mono', monospace; }
         .title-gradient { background: linear-gradient(135deg, #ffffff 30%, #f59e0b 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .report-grid { display: grid; grid-template-columns: 1fr 1fr; background: #0f172a; border: 1px solid #1e293b; border-radius: 4px; overflow: hidden; }
-        .report-cell { padding: 24px 12px; border: 0.5px solid #1e293b; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 130px; background-color: #0f172a; }
+        .report-grid { display: grid; grid-template-columns: 1fr 1fr; background: #0f172a; border: 1px solid #1e293b; border-radius: 8px; overflow: hidden; }
+        .report-cell { padding: 20px 10px; border: 0.5px solid #1e293b; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 110px; background-color: #0f172a; }
+        input, select { -webkit-appearance: none; border-radius: 12px !important; }
         input:focus { box-shadow: 0 0 15px rgba(245, 158, 11, 0.2); border-color: #f59e0b !important; }
-        .btn-shadow { box-shadow: 0 4px 0px 0px rgba(0,0,0,0.4); }
+        .btn-shadow { box-shadow: 0 4px 0px 0px rgba(0,0,0,0.4); transition: all 0.1s; }
         .btn-shadow:active { transform: translateY(2px); box-shadow: 0 1px 0px 0px rgba(0,0,0,0.4); }
         .fade-show { display: block !important; animation: fadeIn 0.4s ease-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
-        /* 用於匯出時隱藏但不影響佈局 */
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         .capture-hide { opacity: 0 !important; pointer-events: none !important; }
     </style>
 </head>
-<body class="min-h-screen flex justify-center">
+<body class="min-h-screen flex justify-center overflow-x-hidden">
 
-<div id="capture-area" class="w-full max-w-md bg-ind-deep min-h-screen flex flex-col p-6 border-x border-slate-900 shadow-2xl">
+<div id="capture-area" class="w-full max-w-md bg-ind-deep min-h-screen flex flex-col p-5 border-x border-slate-900 shadow-2xl">
     
-    <header class="mb-10 text-center">
+    <header class="mb-8 text-center pt-2">
         <div class="flex flex-col items-center justify-center gap-2">
-            <div class="w-10 h-10 mb-2 flex items-center justify-center bg-ind-accent/10 rounded-full border border-ind-accent/30">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-ind-accent" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
-                    <circle cx="12" cy="12" r="3"/>
-                </svg>
-            </div>
             <h1 id="main-title" class="text-2xl font-black leading-tight uppercase tracking-tighter title-gradient"></h1>
         </div>
-        
         <div class="mt-4 flex justify-center gap-3">
-            <span class="text-[10px] bg-white text-black px-2 py-0.5 rounded font-black tracking-widest uppercase">System V4.4</span>
-            <button onclick="app.toggleLanguage()" class="text-[10px] bg-slate-800 text-slate-300 px-3 py-0.5 rounded border border-slate-700 font-bold hover:bg-slate-700 transition">EN / 中文</button>
+            <span class="text-[10px] bg-white text-black px-2 py-0.5 rounded font-black tracking-widest uppercase">System V4.5</span>
+            <button onclick="app.toggleLanguage()" class="text-[10px] bg-slate-800 text-slate-300 px-4 py-1 rounded-full border border-slate-700 font-bold active:bg-slate-600 transition">Language: EN / 中</button>
         </div>
     </header>
 
-    <div class="mb-8 no-capture">
-        <button id="btn-preset" onclick="app.applyPreset(55, 15550.88, 40)" class="w-full bg-slate-800 text-slate-300 text-sm py-4 rounded-lg font-bold border border-slate-700 btn-shadow"></button>
+    <div class="mb-6 no-capture">
+        <button id="btn-preset" onclick="app.applyPreset(55, 15550.88, 40)" class="w-full bg-slate-800/50 text-slate-400 text-xs py-3 rounded-xl border border-dashed border-slate-700"></button>
     </div>
 
-    <main class="flex-grow space-y-8">
-        <div class="grid grid-cols-2 gap-x-4 gap-y-6">
-            <div class="space-y-2"><label id="lbl-radius" class="text-base font-black text-slate-400 block"></label><input type="number" id="radius" class="w-full bg-ind-panel border border-slate-800 rounded-lg p-3 text-2xl text-white outline-none font-mono font-bold"></div>
-            <div class="space-y-2"><label id="lbl-speed" class="text-base font-black text-slate-400 block"></label><input type="number" id="speed" class="w-full bg-ind-panel border border-slate-800 rounded-lg p-3 text-2xl text-white outline-none font-mono font-bold"></div>
-            <div class="space-y-2"><label id="lbl-ratio" class="text-base font-black text-slate-400 block"></label><input type="number" id="ratio" class="w-full bg-ind-panel border border-slate-800 rounded-lg p-3 text-2xl text-white outline-none font-mono font-bold"></div>
-            <div class="space-y-2"><label id="lbl-gear" class="text-base font-black text-slate-400 block"></label><select id="gearType" class="w-full bg-ind-panel border border-slate-800 rounded-lg p-3 text-xl text-white font-bold"></select></div>
+    <main class="flex-grow space-y-6">
+        <div class="grid grid-cols-2 gap-3">
+            <div class="space-y-1.5"><label id="lbl-radius" class="text-xs font-black text-slate-500 block ml-1"></label><input type="number" id="radius" class="w-full h-14 bg-ind-panel border border-slate-800 rounded-xl p-3 text-xl text-white outline-none font-mono font-bold" placeholder="0"></div>
+            <div class="space-y-1.5"><label id="lbl-speed" class="text-xs font-black text-slate-500 block ml-1"></label><input type="number" id="speed" class="w-full h-14 bg-ind-panel border border-slate-800 rounded-xl p-3 text-xl text-white outline-none font-mono font-bold" placeholder="0"></div>
+            <div class="space-y-1.5"><label id="lbl-ratio" class="text-xs font-black text-slate-500 block ml-1"></label><input type="number" id="ratio" class="w-full h-14 bg-ind-panel border border-slate-800 rounded-xl p-3 text-xl text-white outline-none font-mono font-bold" placeholder="0"></div>
+            <div class="space-y-1.5"><label id="lbl-gear" class="text-xs font-black text-slate-500 block ml-1"></label><select id="gearType" class="w-full h-14 bg-ind-panel border border-slate-800 rounded-xl px-3 text-lg text-white font-bold"></select></div>
         </div>
         
-        <div class="space-y-2"><label id="lbl-safety" class="text-base font-black text-slate-400 block"></label><select id="safety" class="w-full bg-ind-panel border border-slate-800 rounded-lg p-3 text-xl text-white font-bold"></select></div>
+        <div class="space-y-1.5"><label id="lbl-safety" class="text-xs font-black text-slate-500 block ml-1"></label><select id="safety" class="w-full h-14 bg-ind-panel border border-slate-800 rounded-xl px-3 text-lg text-white font-bold"></select></div>
 
-        <div class="flex bg-slate-900 border border-slate-800 p-1.5 rounded-xl">
-            <button onclick="app.setMode('power')" id="btn-mode-p" class="flex-1 py-4 text-base font-black uppercase tracking-wider rounded-lg transition-all"></button>
-            <button onclick="app.setMode('load')" id="btn-mode-l" class="flex-1 py-4 text-base font-black uppercase tracking-wider rounded-lg transition-all"></button>
+        <div class="flex bg-slate-900 border border-slate-800 p-1 rounded-2xl">
+            <button onclick="app.setMode('power')" id="btn-mode-p" class="flex-1 py-4 text-sm font-black uppercase tracking-wider rounded-xl transition-all"></button>
+            <button onclick="app.setMode('load')" id="btn-mode-l" class="flex-1 py-4 text-sm font-black uppercase tracking-wider rounded-xl transition-all"></button>
         </div>
 
-        <div class="bg-slate-900 p-8 border border-slate-800 rounded-2xl shadow-inner">
-            <div class="flex justify-between items-center mb-4">
-                <label id="lbl-dynamic-input" class="text-base font-black text-ind-accent uppercase tracking-widest"></label>
-                <div id="unit-toggle" class="hidden flex text-xs font-black border border-slate-700 rounded overflow-hidden">
-                    <button id="btn-kw" onclick="app.setPowerUnit('kW')" class="px-4 py-2">kW</button>
-                    <button id="btn-hp" onclick="app.setPowerUnit('HP')" class="px-4 py-2">HP</button>
+        <div class="bg-slate-900 p-6 border border-slate-800 rounded-3xl shadow-inner relative">
+            <div class="flex justify-between items-center mb-2">
+                <label id="lbl-dynamic-input" class="text-xs font-black text-ind-accent uppercase tracking-widest"></label>
+                <div id="unit-toggle" class="hidden flex text-[10px] font-black border border-slate-700 rounded-lg overflow-hidden">
+                    <button id="btn-kw" onclick="app.setPowerUnit('kW')" class="px-3 py-1.5">kW</button>
+                    <button id="btn-hp" onclick="app.setPowerUnit('HP')" class="px-3 py-1.5">HP</button>
                 </div>
             </div>
-            <input type="number" id="mainInput" class="w-full bg-transparent text-5xl font-mono text-white outline-none font-black text-center" placeholder="0">
+            <input type="number" id="mainInput" class="w-full bg-transparent text-5xl font-mono text-white outline-none font-black text-center py-2" placeholder="0">
         </div>
 
         <div id="report-container" class="hidden">
-            <div class="flex items-center gap-3 mb-6 mt-10">
-                <div class="w-2 h-8 bg-ind-accent"></div>
-                <span id="lbl-report" class="text-2xl font-black text-white uppercase"></span>
+            <div class="flex items-center gap-2 mb-4 mt-8">
+                <div class="w-1.5 h-6 bg-ind-accent rounded-full"></div>
+                <span id="lbl-report" class="text-xl font-black text-white uppercase tracking-tight"></span>
             </div>
             
             <div id="report-grid" class="report-grid shadow-2xl">
-                <div class="report-cell"><span id="lbl-res-rpm" class="text-base text-slate-400 font-black mb-3"></span><span id="res-rpm" class="text-3xl font-mono font-bold text-white">---</span><span id="rpm-warning" class="hidden"></span></div>
-                <div class="report-cell"><span id="lbl-res-load" class="text-base text-slate-400 font-black mb-3"></span><span id="res-load" class="text-3xl font-mono font-bold">---</span></div>
-                <div class="report-cell"><span id="lbl-res-torque" class="text-base text-slate-400 font-black mb-3"></span><span id="res-torque" class="text-3xl font-mono font-bold text-white">---</span></div>
-                <div class="report-cell"><span id="lbl-res-sf" class="text-base text-slate-400 font-black mb-3"></span><span id="res-sf" class="text-3xl font-mono font-bold text-ind-accent">---</span></div>
+                <div class="report-cell"><span id="lbl-res-rpm" class="text-xs text-slate-500 font-black mb-2 uppercase"></span><span id="res-rpm" class="text-2xl font-mono font-bold text-white">---</span><span id="rpm-warning" class="hidden"></span></div>
+                <div class="report-cell"><span id="lbl-res-load" class="text-xs text-slate-500 font-black mb-2 uppercase"></span><span id="res-load" class="text-2xl font-mono font-bold">---</span></div>
+                <div class="report-cell"><span id="lbl-res-torque" class="text-xs text-slate-500 font-black mb-2 uppercase"></span><span id="res-torque" class="text-2xl font-mono font-bold text-white">---</span></div>
+                <div class="report-cell"><span id="lbl-res-sf" class="text-xs text-slate-500 font-black mb-2 uppercase"></span><span id="res-sf" class="text-2xl font-mono font-bold text-ind-accent">---</span></div>
                 
-                <div id="row-selection" class="report-cell col-span-2 py-12 border-t border-slate-800 bg-red-950/10">
-                    <span id="lbl-res-rec" class="text-xl font-black text-slate-400 uppercase tracking-widest mb-8"></span>
+                <div id="row-selection" class="report-cell col-span-2 py-8 border-t border-slate-800 bg-red-950/20">
+                    <span id="lbl-res-rec" class="text-xs font-black text-slate-500 uppercase tracking-widest mb-4"></span>
                     <div id="res-rec" class="w-full text-white">---</div>
                 </div>
 
-                <div class="report-cell col-span-2 py-14 border-t border-slate-800">
-                    <span id="lbl-res-power" class="text-base text-slate-400 font-black mb-5"></span>
-                    <span id="res-power" class="text-4xl font-mono font-bold flex items-baseline gap-2">---</span>
+                <div class="report-cell col-span-2 py-10 border-t border-slate-800 bg-slate-900/50">
+                    <span id="lbl-res-power" class="text-xs text-slate-500 font-black mb-4 uppercase"></span>
+                    <span id="res-power" class="text-3xl font-mono font-bold flex items-baseline gap-2">---</span>
                 </div>
             </div>
         </div>
     </main>
 
-    <div class="grid grid-cols-3 gap-4 mt-12 no-capture">
-        <button id="btn-calc" onclick="app.calculate()" class="bg-emerald-600 text-white py-5 rounded-xl font-black text-sm btn-shadow"></button>
-        <button id="btn-reset" onclick="location.reload()" class="bg-slate-800 text-slate-400 py-5 rounded-xl font-black text-sm btn-shadow"></button>
-        <button id="btn-export" onclick="app.generateReport()" class="bg-blue-600 text-white py-5 rounded-xl font-black text-sm btn-shadow"></button>
+    <div class="grid grid-cols-1 gap-3 mt-10 pb-8 no-capture">
+        <button id="btn-calc" onclick="app.calculate()" class="bg-emerald-600 text-white h-16 rounded-2xl font-black text-lg btn-shadow uppercase tracking-widest"></button>
+        <div class="grid grid-cols-2 gap-3">
+            <button id="btn-export" onclick="app.generateReport()" class="bg-blue-600 text-white h-14 rounded-2xl font-black text-sm btn-shadow uppercase"></button>
+            <button id="btn-reset" onclick="location.reload()" class="bg-slate-800 text-slate-400 h-14 rounded-2xl font-black text-sm btn-shadow uppercase"></button>
+        </div>
     </div>
 
-    <footer class="mt-12 py-6 text-center text-[10px] text-slate-600 border-t border-slate-900/50 no-capture">
+    <footer class="mt-4 py-6 text-center text-[10px] text-slate-600 border-t border-slate-900/50 no-capture">
         <p class="mb-1">© 2025 ChangYi Engineering Tools.</p>
         <p>Vertical Winch Motor Load Calculation System</p>
     </footer>
 </div>
 
 <script>
+// (保留與 V4.4 相同的 JS 邏輯，僅優化 UI 控制部分)
 const app = {
     G: 9.80665,
-    CONV: 0.7457, // HP to kW
+    CONV: 0.7457,
     state: { mode: 'power', powerUnit: 'kW', lang: 'zh' },
     standardMotors: [
         { hp: 0.125, kw: 0.09 }, { hp: 0.25, kw: 0.18 }, { hp: 0.5, kw: 0.37 },
@@ -137,28 +126,28 @@ const app = {
     ],
     translations: {
         zh: {
-            title: "垂直捲線機構<br>馬達負載計算系統",
-            radius: "捲輪半徑 (mm)", speed: "提升速度 (mm/min)", ratio: "減速比 (i)",
-            gear: "減速機效率 (η)", safety: "安全係數 (S.F.)", modeP: "推算功率",
-            modeL: "推算荷重", inputLoad: "目標荷重 (kg)", inputPower: "馬達功率",
+            title: "垂直捲線機構<br>負載計算系統",
+            radius: "半徑 (mm)", speed: "速度 (mm/min)", ratio: "減速比 (i)",
+            gear: "效率 (η)", safety: "安全係數 (S.F.)", modeP: "算功率",
+            modeL: "算荷重", inputLoad: "目標荷重 (kg)", inputPower: "馬達功率",
             report: "計算報告", resRPM: "馬達轉速", resSF: "安全係數",
-            resLoadP: "目標荷重", resLoadL: "容許荷重", resPowerP: "理論計算功率", resPowerL: "馬達功率", resTorque: "輸出轉矩",
-            rpmHigh: "⚠️ RPM 過高", gearOptions: [{ val: "0.95", text: "齒輪 (95%)" }, { val: "0.90", text: "擺線 (90%)" }, { val: "0.70", text: "渦輪 (70%)" }],
+            resLoadP: "目標荷重", resLoadL: "容許荷重", resPowerP: "理論功率", resPowerL: "馬達功率", resTorque: "輸出轉矩",
+            rpmHigh: "⚠️ RPM 高", gearOptions: [{ val: "0.95", text: "齒輪 (95%)" }, { val: "0.90", text: "擺線 (90%)" }, { val: "0.70", text: "渦輪 (70%)" }],
             sfOptions: [{ val: "1.5", text: "1.5 (標準)" }, { val: "2.0", text: "2.0 (重負載)" }],
-            preset: "示範參考數據", btnCalc: "執行計算", btnReset: "清除重置", btnExport: "導出報告",
+            preset: "載入示範數據", btnCalc: "執行計算", btnReset: "重置", btnExport: "導出報告",
             resRec: "建議規格推薦", poleSug: "建議極數"
         },
         en: {
-            title: "Vertical Winch<br>Motor Load System",
+            title: "Vertical Winch<br>Load System",
             radius: "Radius (mm)", speed: "Speed (mm/min)", ratio: "Ratio (i)",
-            gear: "Efficiency (η)", safety: "S.F. Factor", modeP: "Power Calc",
-            modeL: "Load Calc", inputLoad: "Target Load (kg)", inputPower: "Motor Power",
-            report: "REPORT", resRPM: "Motor RPM", resSF: "Safety Factor",
+            gear: "Eff. (η)", safety: "S.F. Factor", modeP: "Calc Power",
+            modeL: "Calc Load", inputLoad: "Load (kg)", inputPower: "Motor Power",
+            report: "REPORT", resRPM: "Motor RPM", resSF: "S.F.",
             resLoadP: "Target Load", resLoadL: "Allow. Load", resPowerP: "Theo. Power", resPowerL: "Motor Power", resTorque: "Torque",
             rpmHigh: "⚠️ HI-RPM", gearOptions: [{ val: "0.95", text: "Gear (95%)" }, { val: "0.90", text: "Cyclo (90%)" }, { val: "0.70", text: "Worm (70%)" }],
             sfOptions: [{ val: "1.5", text: "1.5 (Std)" }, { val: "2.0", text: "2.0 (Heavy)" }],
-            preset: "Preset Data", btnCalc: "CALCULATE", btnReset: "RESET", btnExport: "EXPORT",
-            resRec: "Recommendation", poleSug: "Pole Sug."
+            preset: "Load Preset", btnCalc: "CALCULATE", btnReset: "RESET", btnExport: "EXPORT",
+            resRec: "Recommendation", poleSug: "Pole"
         }
     },
     init() { this.populateDropdowns(); this.updateUI(); this.setMode('power'); },
@@ -183,23 +172,21 @@ const app = {
     },
     setMode(m) {
         this.state.mode = m; const isP = m === 'power';
-        const active = "flex-1 py-4 text-base font-black bg-ind-accent text-ind-deep rounded-lg";
-        const inactive = "flex-1 py-4 text-base font-black text-slate-500 hover:text-slate-300";
+        const active = "flex-1 py-4 text-sm font-black bg-ind-accent text-ind-deep rounded-xl shadow-lg";
+        const inactive = "flex-1 py-4 text-sm font-black text-slate-500";
         document.getElementById('btn-mode-p').className = isP ? active : inactive;
         document.getElementById('btn-mode-l').className = !isP ? active : inactive;
         document.getElementById('unit-toggle').classList.toggle('hidden', isP);
         document.getElementById('row-selection').classList.toggle('hidden', !isP);
         this.updateUI();
-        if(document.getElementById('report-container').classList.contains('fade-show')) this.calculate();
     },
     setPowerUnit(u) {
         this.state.powerUnit = u;
-        const active = "px-4 py-2 bg-slate-600 text-white";
-        const inactive = "px-4 py-2 text-slate-500";
+        const active = "px-3 py-1.5 bg-slate-600 text-white";
+        const inactive = "px-3 py-1.5 text-slate-500";
         document.getElementById('btn-kw').className = u === 'kW' ? active : inactive;
         document.getElementById('btn-hp').className = u === 'HP' ? active : inactive;
         this.updateUI();
-        if(document.getElementById('report-container').classList.contains('fade-show')) this.calculate();
     },
     updateUI() {
         const t = this.translations[this.state.lang];
@@ -217,11 +204,6 @@ const app = {
         for(const [id, txt] of Object.entries(labels)) document.getElementById(id).innerText = txt;
         document.getElementById('lbl-dynamic-input').innerText = (this.state.mode === 'power') ? t.inputLoad : `${t.inputPower} (${this.state.powerUnit})`;
     },
-    getMotorRec(pKW, motorRPM) {
-        const recMotor = this.standardMotors.find(m => m.kw >= pKW) || { hp: '?', kw: '?' };
-        const pole = motorRPM > 1800 ? "2P" : (motorRPM <= 900 ? "8P" : (motorRPM <= 1200 ? "6P" : "4P"));
-        return { ...recMotor, pole };
-    },
     calculate() {
         const r = Math.max(0.1, parseFloat(document.getElementById('radius').value)), 
               s = Math.max(0.1, parseFloat(document.getElementById('speed').value)), 
@@ -229,72 +211,54 @@ const app = {
               eff = parseFloat(document.getElementById('gearType').value), 
               sf = parseFloat(document.getElementById('safety').value), 
               val = Math.max(0, parseFloat(document.getElementById('mainInput').value));
-              
         if(isNaN(r) || isNaN(s) || isNaN(i) || isNaN(val)) return;
-        
         const motorRPM = (s / (2 * Math.PI * r)) * i;
         document.getElementById('res-rpm').innerText = this.formatNum(motorRPM, 1);
-        
         const warn = document.getElementById('rpm-warning');
-        warn.className = motorRPM > 1800 ? "text-[10px] font-black text-ind-accent block mt-2" : "hidden";
+        warn.className = motorRPM > 1800 ? "text-[10px] font-black text-ind-accent block mt-1" : "hidden";
         warn.innerText = this.translations[this.state.lang].rpmHigh;
-
         let loadKg = 0, pKW = 0; const v = s / 60000;
-
         if(this.state.mode === 'power') {
-            loadKg = val; 
-            pKW = (loadKg * this.G * v / eff) * sf / 1000;
+            loadKg = val; pKW = (loadKg * this.G * v / eff) * sf / 1000;
             this.renderPower(pKW, 'red');
-            document.getElementById('res-load').className = "text-3xl font-mono font-bold text-ind-accent";
-            
-            const rec = this.getMotorRec(pKW, motorRPM);
+            document.getElementById('res-load').className = "text-2xl font-mono font-bold text-ind-accent";
+            const rec = (this.standardMotors.find(m => m.kw >= pKW) || { hp: '?', kw: '?' });
+            const pole = motorRPM > 1800 ? "2P" : (motorRPM <= 900 ? "8P" : (motorRPM <= 1200 ? "6P" : "4P"));
             document.getElementById('res-rec').innerHTML = `
                 <div class="flex flex-col items-center">
                     <div class="flex items-baseline gap-1">
-                        <span class="text-ind-alert text-7xl font-black">${this.formatNum(rec.hp, 2)}</span>
-                        <span class="text-ind-alert text-xl font-black uppercase">HP</span>
-                        <span class="text-slate-800 text-6xl mx-4 font-light italic">/</span>
-                        <span class="text-ind-alert text-5xl font-black">${this.formatNum(rec.kw, 2)}</span>
-                        <span class="text-ind-alert text-lg font-black uppercase ml-1">kW</span>
+                        <span class="text-ind-alert text-5xl font-black">${this.formatNum(rec.hp, 2)}</span>
+                        <span class="text-ind-alert text-sm font-black uppercase">HP</span>
+                        <span class="text-slate-800 text-4xl mx-3 font-light italic">/</span>
+                        <span class="text-ind-alert text-3xl font-black">${this.formatNum(rec.kw, 2)}</span>
+                        <span class="text-ind-alert text-xs font-black uppercase ml-1">kW</span>
                     </div>
-                    <div class="mt-8 px-12 py-3 bg-red-600/20 border border-red-500/30 rounded-full">
-                        <span class="text-ind-alert text-sm font-black tracking-[0.3em] uppercase">${this.translations[this.state.lang].poleSug}: ${rec.pole}</span>
+                    <div class="mt-4 px-8 py-2 bg-red-600/20 border border-red-500/30 rounded-full">
+                        <span class="text-ind-alert text-[10px] font-black tracking-widest uppercase">${this.translations[this.state.lang].poleSug}: ${pole}</span>
                     </div>
                 </div>`;
         } else {
             pKW = this.state.powerUnit === 'HP' ? val * this.CONV : val;
             loadKg = (pKW * 1000 * eff) / (v * sf * this.G);
             this.renderPower(pKW, 'white');
-            document.getElementById('res-load').className = "text-3xl font-mono font-bold text-rose-500";
+            document.getElementById('res-load').className = "text-2xl font-mono font-bold text-rose-500";
         }
-
         document.getElementById('res-load').innerText = this.formatNum(loadKg, 1);
         document.getElementById('res-torque').innerText = this.formatNum(loadKg * this.G * r / 1000, 1);
         document.getElementById('res-sf').innerText = this.formatNum(sf, 1);
         document.getElementById('report-container').classList.add('fade-show');
+        window.scrollTo({ top: document.getElementById('report-container').offsetTop, behavior: 'smooth' });
     },
     renderPower(p, color) {
         const hp = p / this.CONV, res = document.getElementById('res-power'), 
-              valC = (color === 'red' || this.state.mode === 'load') ? 'text-ind-accent' : 'text-white', 
-              unitC = 'text-xs text-slate-500 font-black ml-1 uppercase';
-        res.innerHTML = `<span class="${valC}">${this.formatNum(hp, 2)}</span><span class="${unitC}">HP</span><span class="mx-4 opacity-10 text-white italic">/</span><span class="${valC}">${this.formatNum(p, 2)}</span><span class="${unitC}">kW</span>`;
+              valC = (color === 'red' || this.state.mode === 'load') ? 'text-ind-accent' : 'text-white';
+        res.innerHTML = `<span class="${valC}">${this.formatNum(hp, 2)}</span><span class="text-xs text-slate-500 font-black ml-1 uppercase">HP</span><span class="mx-3 opacity-10 text-white italic">/</span><span class="${valC}">${this.formatNum(p, 2)}</span><span class="text-xs text-slate-500 font-black ml-1 uppercase">kW</span>`;
     },
     generateReport() {
-        const area = document.querySelector("#capture-area");
-        // 優化匯出隱藏方式，避免 Layout Shift
         const noCapture = document.querySelectorAll('.no-capture');
         noCapture.forEach(el => el.classList.add('capture-hide'));
-        
-        html2canvas(area, { 
-            backgroundColor: "#020617", 
-            scale: 2,
-            logging: false,
-            useCORS: true 
-        }).then(canvas => {
-            const link = document.createElement('a'); 
-            link.download = `Motor_Calc_${new Date().getTime()}.png`; 
-            link.href = canvas.toDataURL(); 
-            link.click();
+        html2canvas(document.querySelector("#capture-area"), { backgroundColor: "#020617", scale: 2 }).then(canvas => {
+            const link = document.createElement('a'); link.download = `Motor_Report_${new Date().getTime()}.png`; link.href = canvas.toDataURL(); link.click();
             noCapture.forEach(el => el.classList.remove('capture-hide'));
         });
     }
