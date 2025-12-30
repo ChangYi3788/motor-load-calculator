@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#020617">
-    <title>馬達負載計算系統 V4.5 - Mobile Optimized</title>
+    <title>馬達負載計算系統 V4.6 - Precision Engineering</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -18,14 +18,13 @@
         body { background-color: #020617; background-image: radial-gradient(#1e293b 0.5px, transparent 0.5px); background-size: 20px 20px; font-family: 'Noto Sans TC', sans-serif; color: #cbd5e1; }
         .font-mono { font-family: 'JetBrains Mono', monospace; }
         .title-gradient { background: linear-gradient(135deg, #ffffff 30%, #f59e0b 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .report-grid { display: grid; grid-template-columns: 1fr 1fr; background: #0f172a; border: 1px solid #1e293b; border-radius: 8px; overflow: hidden; }
+        .report-grid { display: grid; grid-template-columns: 1fr 1fr; background: #0f172a; border: 1px solid #1e293b; border-radius: 12px; overflow: hidden; }
         .report-cell { padding: 20px 10px; border: 0.5px solid #1e293b; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 110px; background-color: #0f172a; }
         input, select { -webkit-appearance: none; border-radius: 12px !important; }
-        input:focus { box-shadow: 0 0 15px rgba(245, 158, 11, 0.2); border-color: #f59e0b !important; }
         .btn-shadow { box-shadow: 0 4px 0px 0px rgba(0,0,0,0.4); transition: all 0.1s; }
         .btn-shadow:active { transform: translateY(2px); box-shadow: 0 1px 0px 0px rgba(0,0,0,0.4); }
         .fade-show { display: block !important; animation: fadeIn 0.4s ease-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
         .capture-hide { opacity: 0 !important; pointer-events: none !important; }
     </style>
 </head>
@@ -34,28 +33,26 @@
 <div id="capture-area" class="w-full max-w-md bg-ind-deep min-h-screen flex flex-col p-5 border-x border-slate-900 shadow-2xl">
     
     <header class="mb-8 text-center pt-2">
-        <div class="flex flex-col items-center justify-center gap-2">
-            <h1 id="main-title" class="text-2xl font-black leading-tight uppercase tracking-tighter title-gradient"></h1>
-        </div>
+        <h1 id="main-title" class="text-2xl font-black leading-tight uppercase tracking-tighter title-gradient"></h1>
         <div class="mt-4 flex justify-center gap-3">
-            <span class="text-[10px] bg-white text-black px-2 py-0.5 rounded font-black tracking-widest uppercase">System V4.5</span>
+            <span class="text-[10px] bg-white text-black px-2 py-0.5 rounded font-black tracking-widest uppercase">System V4.6</span>
             <button onclick="app.toggleLanguage()" class="text-[10px] bg-slate-800 text-slate-300 px-4 py-1 rounded-full border border-slate-700 font-bold active:bg-slate-600 transition">Language: EN / 中</button>
         </div>
     </header>
 
     <div class="mb-6 no-capture">
-        <button id="btn-preset" onclick="app.applyPreset(55, 15550.88, 40)" class="w-full bg-slate-800/50 text-slate-400 text-xs py-3 rounded-xl border border-dashed border-slate-700"></button>
+        <button id="btn-preset" onclick="app.applyPreset(55, 15550.88, 40)" class="w-full bg-slate-800/50 text-slate-400 text-xs py-3 rounded-xl border border-dashed border-slate-700 active:bg-slate-700"></button>
     </div>
 
     <main class="flex-grow space-y-6">
         <div class="grid grid-cols-2 gap-3">
-            <div class="space-y-1.5"><label id="lbl-radius" class="text-xs font-black text-slate-500 block ml-1"></label><input type="number" id="radius" class="w-full h-14 bg-ind-panel border border-slate-800 rounded-xl p-3 text-xl text-white outline-none font-mono font-bold" placeholder="0"></div>
-            <div class="space-y-1.5"><label id="lbl-speed" class="text-xs font-black text-slate-500 block ml-1"></label><input type="number" id="speed" class="w-full h-14 bg-ind-panel border border-slate-800 rounded-xl p-3 text-xl text-white outline-none font-mono font-bold" placeholder="0"></div>
-            <div class="space-y-1.5"><label id="lbl-ratio" class="text-xs font-black text-slate-500 block ml-1"></label><input type="number" id="ratio" class="w-full h-14 bg-ind-panel border border-slate-800 rounded-xl p-3 text-xl text-white outline-none font-mono font-bold" placeholder="0"></div>
-            <div class="space-y-1.5"><label id="lbl-gear" class="text-xs font-black text-slate-500 block ml-1"></label><select id="gearType" class="w-full h-14 bg-ind-panel border border-slate-800 rounded-xl px-3 text-lg text-white font-bold"></select></div>
+            <div class="space-y-1.5"><label id="lbl-radius" class="text-xs font-black text-slate-500 block ml-1 uppercase tracking-tighter"></label><input type="number" id="radius" class="w-full h-14 bg-ind-panel border border-slate-800 rounded-xl p-3 text-xl text-white outline-none font-mono font-bold" placeholder="0"></div>
+            <div class="space-y-1.5"><label id="lbl-speed" class="text-xs font-black text-slate-500 block ml-1 uppercase tracking-tighter"></label><input type="number" id="speed" class="w-full h-14 bg-ind-panel border border-slate-800 rounded-xl p-3 text-xl text-white outline-none font-mono font-bold" placeholder="0"></div>
+            <div class="space-y-1.5"><label id="lbl-ratio" class="text-xs font-black text-slate-500 block ml-1 uppercase tracking-tighter"></label><input type="number" id="ratio" class="w-full h-14 bg-ind-panel border border-slate-800 rounded-xl p-3 text-xl text-white outline-none font-mono font-bold" placeholder="0"></div>
+            <div class="space-y-1.5"><label id="lbl-gear" class="text-xs font-black text-slate-500 block ml-1 uppercase tracking-tighter"></label><select id="gearType" class="w-full h-14 bg-ind-panel border border-slate-800 rounded-xl px-3 text-lg text-white font-bold"></select></div>
         </div>
         
-        <div class="space-y-1.5"><label id="lbl-safety" class="text-xs font-black text-slate-500 block ml-1"></label><select id="safety" class="w-full h-14 bg-ind-panel border border-slate-800 rounded-xl px-3 text-lg text-white font-bold"></select></div>
+        <div class="space-y-1.5"><label id="lbl-safety" class="text-xs font-black text-slate-500 block ml-1 uppercase tracking-tighter"></label><select id="safety" class="w-full h-14 bg-ind-panel border border-slate-800 rounded-xl px-3 text-lg text-white font-bold"></select></div>
 
         <div class="flex bg-slate-900 border border-slate-800 p-1 rounded-2xl">
             <button onclick="app.setMode('power')" id="btn-mode-p" class="flex-1 py-4 text-sm font-black uppercase tracking-wider rounded-xl transition-all"></button>
@@ -80,10 +77,10 @@
             </div>
             
             <div id="report-grid" class="report-grid shadow-2xl">
-                <div class="report-cell"><span id="lbl-res-rpm" class="text-xs text-slate-500 font-black mb-2 uppercase"></span><span id="res-rpm" class="text-2xl font-mono font-bold text-white">---</span><span id="rpm-warning" class="hidden"></span></div>
-                <div class="report-cell"><span id="lbl-res-load" class="text-xs text-slate-500 font-black mb-2 uppercase"></span><span id="res-load" class="text-2xl font-mono font-bold">---</span></div>
-                <div class="report-cell"><span id="lbl-res-torque" class="text-xs text-slate-500 font-black mb-2 uppercase"></span><span id="res-torque" class="text-2xl font-mono font-bold text-white">---</span></div>
-                <div class="report-cell"><span id="lbl-res-sf" class="text-xs text-slate-500 font-black mb-2 uppercase"></span><span id="res-sf" class="text-2xl font-mono font-bold text-ind-accent">---</span></div>
+                <div class="report-cell"><span id="lbl-res-rpm" class="text-xs text-slate-500 font-black mb-2 uppercase tracking-tighter"></span><span id="res-rpm" class="text-2xl font-mono font-bold text-white">---</span><span id="rpm-warning" class="hidden"></span></div>
+                <div class="report-cell"><span id="lbl-res-load" class="text-xs text-slate-500 font-black mb-2 uppercase tracking-tighter"></span><span id="res-load" class="text-2xl font-mono font-bold">---</span></div>
+                <div class="report-cell"><span id="lbl-res-torque" class="text-xs text-slate-500 font-black mb-2 uppercase tracking-tighter"></span><span id="res-torque" class="text-2xl font-mono font-bold text-white">---</span></div>
+                <div class="report-cell"><span id="lbl-res-sf" class="text-xs text-slate-500 font-black mb-2 uppercase tracking-tighter"></span><span id="res-sf" class="text-2xl font-mono font-bold text-ind-accent">---</span></div>
                 
                 <div id="row-selection" class="report-cell col-span-2 py-8 border-t border-slate-800 bg-red-950/20">
                     <span id="lbl-res-rec" class="text-xs font-black text-slate-500 uppercase tracking-widest mb-4"></span>
@@ -91,7 +88,7 @@
                 </div>
 
                 <div class="report-cell col-span-2 py-10 border-t border-slate-800 bg-slate-900/50">
-                    <span id="lbl-res-power" class="text-xs text-slate-500 font-black mb-4 uppercase"></span>
+                    <span id="lbl-res-power" class="text-xs text-slate-500 font-black mb-4 uppercase tracking-tighter"></span>
                     <span id="res-power" class="text-3xl font-mono font-bold flex items-baseline gap-2">---</span>
                 </div>
             </div>
@@ -113,7 +110,6 @@
 </div>
 
 <script>
-// (保留與 V4.4 相同的 JS 邏輯，僅優化 UI 控制部分)
 const app = {
     G: 9.80665,
     CONV: 0.7457,
@@ -131,11 +127,11 @@ const app = {
             gear: "效率 (η)", safety: "安全係數 (S.F.)", modeP: "算功率",
             modeL: "算荷重", inputLoad: "目標荷重 (kg)", inputPower: "馬達功率",
             report: "計算報告", resRPM: "馬達轉速", resSF: "安全係數",
-            resLoadP: "目標荷重", resLoadL: "容許荷重", resPowerP: "理論功率", resPowerL: "馬達功率", resTorque: "輸出轉矩",
+            resLoadP: "目標荷重", resLoadL: "容許荷重", resPowerP: "理論功率", resPowerL: "馬達功率", resTorque: "輸出轉矩(Nm)",
             rpmHigh: "⚠️ RPM 高", gearOptions: [{ val: "0.95", text: "齒輪 (95%)" }, { val: "0.90", text: "擺線 (90%)" }, { val: "0.70", text: "渦輪 (70%)" }],
             sfOptions: [{ val: "1.5", text: "1.5 (標準)" }, { val: "2.0", text: "2.0 (重負載)" }],
-            preset: "載入示範數據", btnCalc: "執行計算", btnReset: "重置", btnExport: "導出報告",
-            resRec: "建議規格推薦", poleSug: "建議極數"
+            preset: "載入範例 (Demo)", btnCalc: "執行計算", btnReset: "重置", btnExport: "導出報告",
+            resRec: "建議規格推薦", poleSug: "建議極數", exporting: "處理中..."
         },
         en: {
             title: "Vertical Winch<br>Load System",
@@ -143,11 +139,11 @@ const app = {
             gear: "Eff. (η)", safety: "S.F. Factor", modeP: "Calc Power",
             modeL: "Calc Load", inputLoad: "Load (kg)", inputPower: "Motor Power",
             report: "REPORT", resRPM: "Motor RPM", resSF: "S.F.",
-            resLoadP: "Target Load", resLoadL: "Allow. Load", resPowerP: "Theo. Power", resPowerL: "Motor Power", resTorque: "Torque",
+            resLoadP: "Target Load", resLoadL: "Allow. Load", resPowerP: "Theo. Power", resPowerL: "Motor Power", resTorque: "Torque(Nm)",
             rpmHigh: "⚠️ HI-RPM", gearOptions: [{ val: "0.95", text: "Gear (95%)" }, { val: "0.90", text: "Cyclo (90%)" }, { val: "0.70", text: "Worm (70%)" }],
             sfOptions: [{ val: "1.5", text: "1.5 (Std)" }, { val: "2.0", text: "2.0 (Heavy)" }],
             preset: "Load Preset", btnCalc: "CALCULATE", btnReset: "RESET", btnExport: "EXPORT",
-            resRec: "Recommendation", poleSug: "Pole"
+            resRec: "Recommendation", poleSug: "Pole", exporting: "Saving..."
         }
     },
     init() { this.populateDropdowns(); this.updateUI(); this.setMode('power'); },
@@ -212,11 +208,13 @@ const app = {
               sf = parseFloat(document.getElementById('safety').value), 
               val = Math.max(0, parseFloat(document.getElementById('mainInput').value));
         if(isNaN(r) || isNaN(s) || isNaN(i) || isNaN(val)) return;
+        
         const motorRPM = (s / (2 * Math.PI * r)) * i;
         document.getElementById('res-rpm').innerText = this.formatNum(motorRPM, 1);
         const warn = document.getElementById('rpm-warning');
         warn.className = motorRPM > 1800 ? "text-[10px] font-black text-ind-accent block mt-1" : "hidden";
         warn.innerText = this.translations[this.state.lang].rpmHigh;
+        
         let loadKg = 0, pKW = 0; const v = s / 60000;
         if(this.state.mode === 'power') {
             loadKg = val; pKW = (loadKg * this.G * v / eff) * sf / 1000;
@@ -244,10 +242,13 @@ const app = {
             document.getElementById('res-load').className = "text-2xl font-mono font-bold text-rose-500";
         }
         document.getElementById('res-load').innerText = this.formatNum(loadKg, 1);
-        document.getElementById('res-torque').innerText = this.formatNum(loadKg * this.G * r / 1000, 1);
+        // 力矩計算修正：r / 1000 轉換為公尺
+        document.getElementById('res-torque').innerText = this.formatNum(loadKg * this.G * (r / 1000), 1);
         document.getElementById('res-sf').innerText = this.formatNum(sf, 1);
         document.getElementById('report-container').classList.add('fade-show');
-        window.scrollTo({ top: document.getElementById('report-container').offsetTop, behavior: 'smooth' });
+        
+        const scrollTarget = document.getElementById('report-container').offsetTop - 50;
+        window.scrollTo({ top: scrollTarget, behavior: 'smooth' });
     },
     renderPower(p, color) {
         const hp = p / this.CONV, res = document.getElementById('res-power'), 
@@ -255,11 +256,26 @@ const app = {
         res.innerHTML = `<span class="${valC}">${this.formatNum(hp, 2)}</span><span class="text-xs text-slate-500 font-black ml-1 uppercase">HP</span><span class="mx-3 opacity-10 text-white italic">/</span><span class="${valC}">${this.formatNum(p, 2)}</span><span class="text-xs text-slate-500 font-black ml-1 uppercase">kW</span>`;
     },
     generateReport() {
+        const btn = document.getElementById('btn-export');
+        const oldText = btn.innerText;
+        btn.innerText = this.translations[this.state.lang].exporting;
+        btn.disabled = true;
+
         const noCapture = document.querySelectorAll('.no-capture');
         noCapture.forEach(el => el.classList.add('capture-hide'));
-        html2canvas(document.querySelector("#capture-area"), { backgroundColor: "#020617", scale: 2 }).then(canvas => {
-            const link = document.createElement('a'); link.download = `Motor_Report_${new Date().getTime()}.png`; link.href = canvas.toDataURL(); link.click();
+        
+        html2canvas(document.querySelector("#capture-area"), { 
+            backgroundColor: "#020617", 
+            scale: 2,
+            useCORS: true 
+        }).then(canvas => {
+            const link = document.createElement('a'); 
+            link.download = `Motor_Report_${new Date().getTime()}.png`; 
+            link.href = canvas.toDataURL(); 
+            link.click();
             noCapture.forEach(el => el.classList.remove('capture-hide'));
+            btn.innerText = oldText;
+            btn.disabled = false;
         });
     }
 };
