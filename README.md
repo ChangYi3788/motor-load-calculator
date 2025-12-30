@@ -1,7 +1,7 @@
 # 垂直捲線機構馬達負載計算系統 | Vertical Winch Motor Load Calculation System (V4.3 Pro)
 
 ![Version](https://img.shields.io/badge/Version-4.3%20Pro-f59e0b)
-![License](https://img.shields.io/badge/License-MIT-emerald)
+![License](https://img.shields.io/github/license/changyi3788/motor-load-calculator?color=emerald)
 ![PWA](https://img.shields.io/badge/PWA-Ready-blue)
 
 [中文介紹](#中文介紹) | [English Description](#english-description)
