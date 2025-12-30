@@ -3,7 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>垂直捲線機構馬達負載計算系統 V4.2</title>
+    <meta name="theme-color" content="#020617">
+    <title>垂直捲線機構馬達負載計算系統 V4.3</title>
+    
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icon-192.png">
+
+    <meta property="og:title" content="垂直捲線機構馬達負載計算系統 V4.3" />
+    <meta property="og:description" content="專業工程師必備：支援功率/荷重雙向推算、安全係數分析與自動選型建議。" />
+    <meta property="og:image" content="https://changyi3788.github.io/motor-load-calculator/preview.png" />
+    <meta property="og:url" content="https://changyi3788.github.io/motor-load-calculator/" />
+    <meta property="og:type" content="website" />
+
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script>
@@ -48,7 +59,7 @@
         </div>
         
         <div class="mt-4 flex justify-center gap-3">
-            <span class="text-[10px] bg-white text-black px-2 py-0.5 rounded font-black tracking-widest uppercase">System V4.2</span>
+            <span class="text-[10px] bg-white text-black px-2 py-0.5 rounded font-black tracking-widest uppercase">System V4.3</span>
             <button onclick="app.toggleLanguage()" class="text-[10px] bg-slate-800 text-slate-300 px-3 py-0.5 rounded border border-slate-700 font-bold hover:bg-slate-700 transition">EN / 中文</button>
         </div>
     </header>
@@ -108,11 +119,16 @@
         </div>
     </main>
 
-    <div class="grid grid-cols-3 gap-4 mt-12 pb-12 no-capture">
+    <div class="grid grid-cols-3 gap-4 mt-12 no-capture">
         <button id="btn-calc" onclick="app.calculate()" class="bg-emerald-600 text-white py-5 rounded-xl font-black text-sm btn-shadow"></button>
         <button id="btn-reset" onclick="location.reload()" class="bg-slate-800 text-slate-400 py-5 rounded-xl font-black text-sm btn-shadow"></button>
         <button id="btn-export" onclick="app.generateReport()" class="bg-blue-600 text-white py-5 rounded-xl font-black text-sm btn-shadow"></button>
     </div>
+
+    <footer class="mt-12 py-6 text-center text-[10px] text-slate-600 border-t border-slate-900/50 no-capture">
+        <p class="mb-1">© 2025 ChangYi Engineering Tools.</p>
+        <p>Vertical Winch Motor Load Calculation System</p>
+    </footer>
 </div>
 
 <script>
@@ -261,7 +277,7 @@ const app = {
         const area = document.querySelector("#capture-area");
         document.querySelectorAll('.no-capture').forEach(el => el.style.display = 'none');
         html2canvas(area, { backgroundColor: "#020617", scale: 3 }).then(canvas => {
-            const link = document.createElement('a'); link.download = `Motor_Calc_V42.png`; link.href = canvas.toDataURL(); link.click();
+            const link = document.createElement('a'); link.download = `Motor_Calc_Report.png`; link.href = canvas.toDataURL(); link.click();
             document.querySelectorAll('.no-capture').forEach(el => el.style.display = (el.tagName === 'DIV' && el.classList.contains('grid')) ? 'grid' : 'block');
         });
     }
