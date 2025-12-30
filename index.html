@@ -4,16 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#020617">
-    <title>垂直捲線機構馬達負載計算系統 V4.3</title>
+    <title>垂直捲線機構馬達負載計算系統 V4.4</title>
     
     <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" href="icon-192.png">
 
-    <meta property="og:title" content="垂直捲線機構馬達負載計算系統 V4.3" />
+    <meta property="og:title" content="垂直捲線機構馬達負載計算系統 V4.4" />
     <meta property="og:description" content="專業工程師必備：支援功率/荷重雙向推算、安全係數分析與自動選型建議。" />
     <meta property="og:image" content="https://changyi3788.github.io/motor-load-calculator/preview.png" />
-    <meta property="og:url" content="https://changyi3788.github.io/motor-load-calculator/" />
-    <meta property="og:type" content="website" />
 
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -26,14 +24,7 @@
         @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@700&family=Noto+Sans+TC:wght@700;900&display=swap');
         body { background-color: #020617; background-image: radial-gradient(#1e293b 0.5px, transparent 0.5px); background-size: 20px 20px; font-family: 'Noto Sans TC', sans-serif; color: #cbd5e1; }
         .font-mono { font-family: 'JetBrains Mono', monospace; }
-        
-        /* 標題漸層文字設計 */
-        .title-gradient {
-            background: linear-gradient(135deg, #ffffff 30%, #f59e0b 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
+        .title-gradient { background: linear-gradient(135deg, #ffffff 30%, #f59e0b 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .report-grid { display: grid; grid-template-columns: 1fr 1fr; background: #0f172a; border: 1px solid #1e293b; border-radius: 4px; overflow: hidden; }
         .report-cell { padding: 24px 12px; border: 0.5px solid #1e293b; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 130px; background-color: #0f172a; }
         input:focus { box-shadow: 0 0 15px rgba(245, 158, 11, 0.2); border-color: #f59e0b !important; }
@@ -41,6 +32,8 @@
         .btn-shadow:active { transform: translateY(2px); box-shadow: 0 1px 0px 0px rgba(0,0,0,0.4); }
         .fade-show { display: block !important; animation: fadeIn 0.4s ease-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        /* 用於匯出時隱藏但不影響佈局 */
+        .capture-hide { opacity: 0 !important; pointer-events: none !important; }
     </style>
 </head>
 <body class="min-h-screen flex justify-center">
@@ -59,7 +52,7 @@
         </div>
         
         <div class="mt-4 flex justify-center gap-3">
-            <span class="text-[10px] bg-white text-black px-2 py-0.5 rounded font-black tracking-widest uppercase">System V4.3</span>
+            <span class="text-[10px] bg-white text-black px-2 py-0.5 rounded font-black tracking-widest uppercase">System V4.4</span>
             <button onclick="app.toggleLanguage()" class="text-[10px] bg-slate-800 text-slate-300 px-3 py-0.5 rounded border border-slate-700 font-bold hover:bg-slate-700 transition">EN / 中文</button>
         </div>
     </header>
@@ -134,6 +127,7 @@
 <script>
 const app = {
     G: 9.80665,
+    CONV: 0.7457, // HP to kW
     state: { mode: 'power', powerUnit: 'kW', lang: 'zh' },
     standardMotors: [
         { hp: 0.125, kw: 0.09 }, { hp: 0.25, kw: 0.18 }, { hp: 0.5, kw: 0.37 },
@@ -156,7 +150,7 @@ const app = {
         },
         en: {
             title: "Vertical Winch<br>Motor Load System",
-            radius: "Radius (mm)", speed: "Speed (min/min)", ratio: "Ratio (i)",
+            radius: "Radius (mm)", speed: "Speed (mm/min)", ratio: "Ratio (i)",
             gear: "Efficiency (η)", safety: "S.F. Factor", modeP: "Power Calc",
             modeL: "Load Calc", inputLoad: "Target Load (kg)", inputPower: "Motor Power",
             report: "REPORT", resRPM: "Motor RPM", resSF: "Safety Factor",
@@ -168,7 +162,7 @@ const app = {
         }
     },
     init() { this.populateDropdowns(); this.updateUI(); this.setMode('power'); },
-    formatNum(n, d=2) { return parseFloat(n.toFixed(d)).toString(); },
+    formatNum(n, d=2) { return isNaN(n) ? "---" : parseFloat(n.toFixed(d)).toString(); },
     populateDropdowns() {
         const t = this.translations[this.state.lang], g = document.getElementById('gearType'), s = document.getElementById('safety');
         g.innerHTML = ""; t.gearOptions.forEach(o => g.add(new Option(o.text, o.val)));
@@ -223,40 +217,52 @@ const app = {
         for(const [id, txt] of Object.entries(labels)) document.getElementById(id).innerText = txt;
         document.getElementById('lbl-dynamic-input').innerText = (this.state.mode === 'power') ? t.inputLoad : `${t.inputPower} (${this.state.powerUnit})`;
     },
+    getMotorRec(pKW, motorRPM) {
+        const recMotor = this.standardMotors.find(m => m.kw >= pKW) || { hp: '?', kw: '?' };
+        const pole = motorRPM > 1800 ? "2P" : (motorRPM <= 900 ? "8P" : (motorRPM <= 1200 ? "6P" : "4P"));
+        return { ...recMotor, pole };
+    },
     calculate() {
-        const r = parseFloat(document.getElementById('radius').value), s = parseFloat(document.getElementById('speed').value), i = parseFloat(document.getElementById('ratio').value), eff = parseFloat(document.getElementById('gearType').value), sf = parseFloat(document.getElementById('safety').value), val = parseFloat(document.getElementById('mainInput').value);
-        if(!r || !s || !i || !val) return;
+        const r = Math.max(0.1, parseFloat(document.getElementById('radius').value)), 
+              s = Math.max(0.1, parseFloat(document.getElementById('speed').value)), 
+              i = Math.max(0.1, parseFloat(document.getElementById('ratio').value)), 
+              eff = parseFloat(document.getElementById('gearType').value), 
+              sf = parseFloat(document.getElementById('safety').value), 
+              val = Math.max(0, parseFloat(document.getElementById('mainInput').value));
+              
+        if(isNaN(r) || isNaN(s) || isNaN(i) || isNaN(val)) return;
         
         const motorRPM = (s / (2 * Math.PI * r)) * i;
         document.getElementById('res-rpm').innerText = this.formatNum(motorRPM, 1);
+        
         const warn = document.getElementById('rpm-warning');
         warn.className = motorRPM > 1800 ? "text-[10px] font-black text-ind-accent block mt-2" : "hidden";
         warn.innerText = this.translations[this.state.lang].rpmHigh;
 
-        let recPole = motorRPM > 1800 ? "2P" : (motorRPM <= 900 ? "8P" : (motorRPM <= 1200 ? "6P" : "4P"));
         let loadKg = 0, pKW = 0; const v = s / 60000;
 
         if(this.state.mode === 'power') {
-            loadKg = val; pKW = (loadKg * this.G * v / eff) * sf / 1000;
+            loadKg = val; 
+            pKW = (loadKg * this.G * v / eff) * sf / 1000;
             this.renderPower(pKW, 'red');
             document.getElementById('res-load').className = "text-3xl font-mono font-bold text-ind-accent";
-            const recMotor = this.standardMotors.find(m => m.kw >= pKW) || { hp: '?', kw: '?' };
             
+            const rec = this.getMotorRec(pKW, motorRPM);
             document.getElementById('res-rec').innerHTML = `
                 <div class="flex flex-col items-center">
                     <div class="flex items-baseline gap-1">
-                        <span class="text-ind-alert text-7xl font-black">${this.formatNum(recMotor.hp, 2)}</span>
+                        <span class="text-ind-alert text-7xl font-black">${this.formatNum(rec.hp, 2)}</span>
                         <span class="text-ind-alert text-xl font-black uppercase">HP</span>
                         <span class="text-slate-800 text-6xl mx-4 font-light italic">/</span>
-                        <span class="text-ind-alert text-5xl font-black">${this.formatNum(recMotor.kw, 2)}</span>
+                        <span class="text-ind-alert text-5xl font-black">${this.formatNum(rec.kw, 2)}</span>
                         <span class="text-ind-alert text-lg font-black uppercase ml-1">kW</span>
                     </div>
                     <div class="mt-8 px-12 py-3 bg-red-600/20 border border-red-500/30 rounded-full">
-                        <span class="text-ind-alert text-sm font-black tracking-[0.3em] uppercase">${this.translations[this.state.lang].poleSug}: ${recPole}</span>
+                        <span class="text-ind-alert text-sm font-black tracking-[0.3em] uppercase">${this.translations[this.state.lang].poleSug}: ${rec.pole}</span>
                     </div>
                 </div>`;
         } else {
-            pKW = this.state.powerUnit === 'HP' ? val * 0.7457 : val;
+            pKW = this.state.powerUnit === 'HP' ? val * this.CONV : val;
             loadKg = (pKW * 1000 * eff) / (v * sf * this.G);
             this.renderPower(pKW, 'white');
             document.getElementById('res-load').className = "text-3xl font-mono font-bold text-rose-500";
@@ -268,17 +274,28 @@ const app = {
         document.getElementById('report-container').classList.add('fade-show');
     },
     renderPower(p, color) {
-        const hp = p / 0.7457, res = document.getElementById('res-power'), 
+        const hp = p / this.CONV, res = document.getElementById('res-power'), 
               valC = (color === 'red' || this.state.mode === 'load') ? 'text-ind-accent' : 'text-white', 
               unitC = 'text-xs text-slate-500 font-black ml-1 uppercase';
         res.innerHTML = `<span class="${valC}">${this.formatNum(hp, 2)}</span><span class="${unitC}">HP</span><span class="mx-4 opacity-10 text-white italic">/</span><span class="${valC}">${this.formatNum(p, 2)}</span><span class="${unitC}">kW</span>`;
     },
     generateReport() {
         const area = document.querySelector("#capture-area");
-        document.querySelectorAll('.no-capture').forEach(el => el.style.display = 'none');
-        html2canvas(area, { backgroundColor: "#020617", scale: 3 }).then(canvas => {
-            const link = document.createElement('a'); link.download = `Motor_Calc_Report.png`; link.href = canvas.toDataURL(); link.click();
-            document.querySelectorAll('.no-capture').forEach(el => el.style.display = (el.tagName === 'DIV' && el.classList.contains('grid')) ? 'grid' : 'block');
+        // 優化匯出隱藏方式，避免 Layout Shift
+        const noCapture = document.querySelectorAll('.no-capture');
+        noCapture.forEach(el => el.classList.add('capture-hide'));
+        
+        html2canvas(area, { 
+            backgroundColor: "#020617", 
+            scale: 2,
+            logging: false,
+            useCORS: true 
+        }).then(canvas => {
+            const link = document.createElement('a'); 
+            link.download = `Motor_Calc_${new Date().getTime()}.png`; 
+            link.href = canvas.toDataURL(); 
+            link.click();
+            noCapture.forEach(el => el.classList.remove('capture-hide'));
         });
     }
 };
