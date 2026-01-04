@@ -1,70 +1,76 @@
-# 垂直捲線機構馬達負載計算系統 (V4.6)
-## Vertical Winch Motor Load Calculation System
+# ⚙️ 垂直捲線機構負載計算系統 (Vertical Winch Load System)
+### Precision Engineering Calculation Tool - System V4.7
 
-[![GitHub Pages](https://img.shields.io/badge/Status-Live-emerald?style=for-the-badge&logo=github)](https://changyi3788.github.io/motor-load-calculator/)
-[![Version](https://img.shields.io/badge/Version-4.6-blue?style=for-the-badge)](https://github.com/changyi3788/motor-load-calculator)
+![Build Status](https://img.shields.io/badge/Status-Live-emerald)
+![Version](https://img.shields.io/badge/Version-4.7-blue)
+![Language](https://img.shields.io/badge/Language-ZH%20%2F%20EN-orange)
 
+這是一個專為自動化設備、舞台機械、工業捲揚機設計的專業計算工具。透過 V4.7 版本的優化，能快速協助工程師進行馬達功率選型與負載驗證。
 
-
-## 🌟 簡介 | Introduction
-
-### [中文]
-這是一個專為工程現場設計的 **馬達負載計算工具**。針對捲線機構、吊掛系統等垂直提升場景提供精確的物理運算。本工具優化了行動裝置的操作體驗，支援中英文雙語切換，並具備一鍵導出計算報告功能。
-
-### [English]
-A specialized **Motor Load Calculation Tool** designed for engineering field use. It provides precise physical calculations for vertical lifting scenarios such as winch mechanisms and hoist systems. Optimized for mobile devices, the tool supports bilingual switching (Chinese/English) and features a one-click calculation report export.
+🔗 **線上即時計算：** [點此開啟系統](https://changyi3788.github.io/motor-load-calculator/)
 
 ---
 
-## 🚀 主要功能 | Core Features
-
-* **雙向模式切換 | Dual Calculation Modes**:
-    * **算功率 (Power Mode)**: 根據目標荷重推算馬達所需功率與建議規格。 / Calculate required motor power based on target load.
-    * **算荷重 (Load Mode)**: 根據馬達功率推算系統安全容許荷重。 / Calculate allowable load capacity based on motor power.
-* **智慧選型推薦 | Smart Recommendation**:
-    * 自動對比標準馬達功率表（HP/kW），並根據馬達轉速建議適用極數 (2P-8P)。 / Automatically matches standard motor tables and suggests pole counts (2P-8P).
-* **物理邏輯精確 | Engineering Precision**:
-    * 考慮減速比、機構效率 (η) 及安全係數 (S.F.)。 / Includes gear ratio, mechanical efficiency (η), and safety factor (S.F.).
-* **行動優先設計 | Mobile First Design**:
-    * 加大觸控熱區，適合工地單手操作。 / Enlarged touch targets for one-handed operation in the field.
-* **報告導出 | Report Export**:
-    * 一鍵將計算結果轉化為 PNG 圖檔。 / Instant PNG report generation via `html2canvas`.
+## 🚀 核心優化：V4.7 更新重點
+- **【新增】雙重扭矩顯示**：同時呈現「捲筒負載端」與「馬達輸出端」扭矩，方便減速機選型。
+- **【新增】規格防呆機制**：計算功率超過 30HP 標準範圍時，自動標記為 **CUSTOM (特殊規格)**。
+- **【優化】UI 響應速度**：針對行動裝置輸入法與報表生成進行了效能優化。
+- **【修正】單位換算邏輯**：強化了 mm/min 與 m/s 之間的轉換精確度。
 
 ---
 
-## ⚙️ 物理公式 | Physical Logic
+## 🛠️ 功能特點 (Features)
 
-本系統基於以下核心公式進行運算：
-This system is built upon the following physical principles:
+### 1. 雙模式計算 (Dual Calculation Modes)
+- **Power Mode (算功率)**：依據目標荷重 $W$，計算所需理論功率與建議馬達等級。
+- **Load Mode (算荷重)**：依據現有馬達馬力，反向推算系統在安全係數下可承載的最大重量。
 
-1. **馬達端轉速 | Motor RPM ($n_{motor}$)**:
-   $$n_{motor} = \frac{v}{2\pi r} \times i$$
-   *(v: 線速度 linear speed, r: 半徑 radius, i: 減速比 ratio)*
+### 2. 規格推薦系統 (Smart Recommendation)
+- 自動對比標準馬達清單 (0.125HP ~ 30HP)。
+- 依據計算轉速自動判定建議極數 (**2P / 4P / 6P / 8P**)。
 
-2. **理論功率 | Theoretical Power ($P_{kW}$)**:
-   $$P (kW) = \left( \frac{m \cdot g \cdot v}{\eta \cdot 1000} \right) \times S.F.$$
-   *(m: 荷重 load, g: 重力加速度 9.80665, η: 效率 efficiency)*
-
-3. **輸出轉矩 | Output Torque ($T_{Nm}$)**:
-   $$T = m \cdot g \cdot (r/1000)$$
+### 3. 工業級報表導出 (Professional Export)
+- 內建報表區塊，可一鍵將計算結果轉換為 PNG 圖檔，方便附加於設計圖紙或技術文件中。
 
 ---
 
-## 🛠️ 技術棧 | Tech Stack
+## 📐 計算物理邏輯 (Physics Logic)
 
-* **Frontend**: HTML5, Tailwind CSS
-* **Typography**: JetBrains Mono, Noto Sans TC
-* **Library**: [html2canvas](https://html2canvas.hertzen.com/)
-* **Deployment**: GitHub Pages
+本系統依據以下核心公式進行撰寫，確保計算結果具備工程參考價值：
+
+- **馬達轉速 (RPM)**：
+  $$N_m = \frac{V}{\pi \cdot D} \cdot i$$
+- **理論功率 (Power)**：
+  $$P_{kW} = \frac{F \cdot V}{\eta \cdot 1000} \cdot S.F.$$
+- **馬達端扭矩 (Motor Torque)**：
+  $$T_m = \frac{F \cdot R}{i \cdot \eta}$$
+
+---
+
+## 💻 技術開發 (Technical Stack)
+
+- **Layout**: Tailwind CSS (JIT mode)
+- **Icons & Fonts**: JetBrains Mono, Noto Sans TC
+- **Core**: Vanilla JavaScript (Object-Literal Pattern)
+- **Library**: html2canvas v1.4.1
 
 ---
 
-## 📖 使用說明 | Instructions
+## 📅 版本更新歷程 (Change Log)
 
-1.  **輸入參數 | Input Parameters**: 填入半徑、速度及減速比。 / Enter radius, speed, and gear ratio.
-2.  **設定環境 | Configuration**: 選擇傳動效率及安全係數。 / Select mechanical efficiency and S.F.
-3.  **執行計算 | Calculate**: 輸入數值後點擊「執行計算」。 / Enter values and click "Calculate".
-4.  **導出報告 | Export**: 點擊「導出報告」存為圖片。 / Click "Export" to save the result as an image.
+- **V4.7** (2025/01) - 加入雙扭矩顯示、馬達選型防呆提示。
+- **V4.6** - 新增多國語系 (EN/ZH) 切換功能、強化 UI 動畫。
+- **V4.0** - 引入 Tailwind CSS 介面重構，支援報表截圖導出。
+- **V1.0** - 基礎功率計算功能上線。
 
 ---
-© 2025 ChangYi Engineering Tools.
+
+## 👥 作者資訊 (Author)
+- **Developer**: ChangYi (常毅)
+- **Contact**: [你的電子郵件或 GitHub Profile 連結]
+- **Project Link**: [https://github.com/changyi3788/motor-load-calculator](https://github.com/changyi3788/motor-load-calculator)
+
+---
+
+> **Disclaimer (免責聲明)**: 
+> 本計算器提供之數據僅供設計初期參考使用。實際工程建置請務必聯繫專業馬達商進行負載曲線確認，並考慮馬達啟動扭矩 (Starting Torque) 與過載係數。
