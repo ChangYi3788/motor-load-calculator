@@ -4,8 +4,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#020617">
-    <title>馬達負載計算系統 V4.7 - Precision Engineering</title>
     
+    <title>馬達負載計算系統 V4.7 - Precision Engineering</title>
+    <meta name="title" content="馬達負載計算系統 V4.7 - Precision Engineering">
+    <meta name="description" content="專為工程師設計的垂直捲揚機構馬達選型工具，支援算功率、算荷重、自動推薦規格及導出專業報表。">
+    <meta name="keywords" content="馬達計算, 捲揚機, Motor Calculator, 機械設計, 功率試算, 扭矩計算">
+
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://changyi3788.github.io/motor-load-calculator/">
+    <meta property="og:title" content="馬達負載計算系統 V4.7 - 專業選型工具">
+    <meta property="og:description" content="一鍵計算提升機構所需功率與扭矩，支援自動規格推薦與 PNG 報告存檔。">
+    <meta property="og:image" content="https://changyi3788.github.io/motor-load-calculator/og-image.png">
+
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://changyi3788.github.io/motor-load-calculator/">
+    <meta property="twitter:title" content="馬達負載計算系統 V4.7">
+    <meta property="twitter:description" content="專為工程師設計的垂直捲揚機構馬達選型工具。">
+    <meta property="twitter:image" content="https://changyi3788.github.io/motor-load-calculator/og-image.png">
+
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script>
@@ -230,37 +246,17 @@ const app = {
             this.renderPower(pKW, 'red');
             document.getElementById('res-load').className = "text-2xl font-mono font-bold text-ind-accent";
             
-            // --- 修改 1: 馬達選型邏輯 (含防呆) ---
             let rec = this.standardMotors.find(m => m.kw >= pKW);
             const pole = motorRPM > 1800 ? "2P" : (motorRPM <= 900 ? "8P" : (motorRPM <= 1200 ? "6P" : "4P"));
             const t = this.translations[this.state.lang];
 
             let recHTML = "";
             if (rec) {
-                // 有找到標準馬達
-                recHTML = `
-                <div class="flex flex-col items-center">
-                    <div class="flex items-baseline gap-1">
-                        <span class="text-ind-alert text-5xl font-black">${this.formatNum(rec.hp, 2)}</span>
-                        <span class="text-ind-alert text-sm font-black uppercase">HP</span>
-                        <span class="text-slate-800 text-4xl mx-3 font-light italic">/</span>
-                        <span class="text-ind-alert text-3xl font-black">${this.formatNum(rec.kw, 2)}</span>
-                        <span class="text-ind-alert text-xs font-black uppercase ml-1">kW</span>
-                    </div>
-                    <div class="mt-4 px-8 py-2 bg-red-600/20 border border-red-500/30 rounded-full">
-                        <span class="text-ind-alert text-[10px] font-black tracking-widest uppercase">${t.poleSug}: ${pole}</span>
-                    </div>
-                </div>`;
+                recHTML = `<div class="flex flex-col items-center"><div class="flex items-baseline gap-1"><span class="text-ind-alert text-5xl font-black">${this.formatNum(rec.hp, 2)}</span><span class="text-ind-alert text-sm font-black uppercase">HP</span><span class="text-slate-800 text-4xl mx-3 font-light italic">/</span><span class="text-ind-alert text-3xl font-black">${this.formatNum(rec.kw, 2)}</span><span class="text-ind-alert text-xs font-black uppercase ml-1">kW</span></div><div class="mt-4 px-8 py-2 bg-red-600/20 border border-red-500/30 rounded-full"><span class="text-ind-alert text-[10px] font-black tracking-widest uppercase">${t.poleSug}: ${pole}</span></div></div>`;
             } else {
-                // 超出範圍 (Over Limit)
-                recHTML = `
-                <div class="flex flex-col items-center py-2">
-                    <span class="text-ind-accent text-4xl font-black tracking-tighter uppercase">${t.overLimit}</span>
-                    <span class="text-slate-500 text-xs font-bold tracking-widest mt-2 uppercase border border-slate-700 px-3 py-1 rounded-full">${t.overLimitSub}</span>
-                </div>`;
+                recHTML = `<div class="flex flex-col items-center py-2"><span class="text-ind-accent text-4xl font-black tracking-tighter uppercase">${t.overLimit}</span><span class="text-slate-500 text-xs font-bold tracking-widest mt-2 uppercase border border-slate-700 px-3 py-1 rounded-full">${t.overLimitSub}</span></div>`;
             }
             document.getElementById('res-rec').innerHTML = recHTML;
-
         } else {
             pKW = this.state.powerUnit === 'HP' ? val * this.CONV : val;
             loadKg = (pKW * 1000 * eff) / (v * sf * this.G);
@@ -270,9 +266,8 @@ const app = {
         
         document.getElementById('res-load').innerText = this.formatNum(loadKg, 1);
         
-        // --- 修改 2: 雙扭矩計算與顯示 ---
-        const torqueLoad = loadKg * this.G * (r / 1000); // 負載端 (捲筒)
-        const torqueMotor = torqueLoad / (i * eff);      // 馬達端 (折算)
+        const torqueLoad = loadKg * this.G * (r / 1000);
+        const torqueMotor = torqueLoad / (i * eff);
         const t = this.translations[this.state.lang];
         
         document.getElementById('res-torque').innerHTML = `
