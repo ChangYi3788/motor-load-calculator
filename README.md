@@ -66,11 +66,11 @@
 ---
 
 ## 👥 作者資訊 (Author)
-- **Developer**: ChangYi (常毅)
-- **Contact**: [你的電子郵件或 GitHub Profile 連結]
+- **Developer**: ChangYi (長益)
 - **Project Link**: [https://github.com/changyi3788/motor-load-calculator](https://github.com/changyi3788/motor-load-calculator)
 
 ---
 
 > **Disclaimer (免責聲明)**: 
 > 本計算器提供之數據僅供設計初期參考使用。實際工程建置請務必聯繫專業馬達商進行負載曲線確認，並考慮馬達啟動扭矩 (Starting Torque) 與過載係數。
+
