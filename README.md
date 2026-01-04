@@ -1,76 +1,64 @@
-# ⚙️ 垂直捲線機構負載計算系統 (Vertical Winch Load System)
+# ⚙️ Motor Load Calculator (馬達負載計算系統)
 ### Precision Engineering Calculation Tool - System V4.7
 
-![Build Status](https://img.shields.io/badge/Status-Live-emerald)
-![Version](https://img.shields.io/badge/Version-4.7-blue)
-![Language](https://img.shields.io/badge/Language-ZH%20%2F%20EN-orange)
-
-這是一個專為自動化設備、舞台機械、工業捲揚機設計的專業計算工具。透過 V4.7 版本的優化，能快速協助工程師進行馬達功率選型與負載驗證。
-
-🔗 **線上即時計算：** [點此開啟系統](https://changyi3788.github.io/motor-load-calculator/)
+![License](https://img.shields.io/badge/license-MIT-green.svg)
+[**English**](#english) | [**中文說明**](#中文說明)
 
 ---
 
-## 🚀 核心優化：V4.7 更新重點
-- **【新增】雙重扭矩顯示**：同時呈現「捲筒負載端」與「馬達輸出端」扭矩，方便減速機選型。
-- **【新增】規格防呆機制**：計算功率超過 30HP 標準範圍時，自動標記為 **CUSTOM (特殊規格)**。
-- **【優化】UI 響應速度**：針對行動裝置輸入法與報表生成進行了效能優化。
-- **【修正】單位換算邏輯**：強化了 mm/min 與 m/s 之間的轉換精確度。
+## English
+
+### 🌟 Project Overview
+A professional engineering tool designed for **Vertical Winch** systems. It assists engineers in calculating required motor power, torque, and selecting standard motor specifications with an intuitive industrial-grade interface.
+
+🔗 **Live Demo:** [Motor Load Calculator](https://changyi3788.github.io/motor-load-calculator/)
+
+### 🚀 Key Features (V4.7)
+- **Dual Mode Calculation**: Toggle between "Calculate Power" and "Calculate Allowable Load".
+- **Dual Torque Analysis**: Displays both **Load-side Torque** (Drum) and **Motor-side Torque** (Reflected).
+- **Smart Motor Recommendation**: Matches calculated results with standard motor catalogs (0.125HP to 30HP).
+- **Safety Safeguards**: 
+    - Auto-warning for high RPM (>1800).
+    - "CUSTOM" alert for power requirements exceeding 30HP.
+- **Report Export**: One-click PNG report generation via `html2canvas`.
 
 ---
 
-## 🛠️ 功能特點 (Features)
+## 中文說明
 
-### 1. 雙模式計算 (Dual Calculation Modes)
-- **Power Mode (算功率)**：依據目標荷重 $W$，計算所需理論功率與建議馬達等級。
-- **Load Mode (算荷重)**：依據現有馬達馬力，反向推算系統在安全係數下可承載的最大重量。
+### 🌟 專案簡介
+這是一個專為 **垂直捲線機構** 設計的專業工程工具。透過直覺的工業風介面，協助工程師精確計算所需的馬達功率、扭矩，並自動推薦適合的標準馬達規格。
 
-### 2. 規格推薦系統 (Smart Recommendation)
-- 自動對比標準馬達清單 (0.125HP ~ 30HP)。
-- 依據計算轉速自動判定建議極數 (**2P / 4P / 6P / 8P**)。
+🔗 **線上試算：** [馬達負載計算系統](https://changyi3788.github.io/motor-load-calculator/)
 
-### 3. 工業級報表導出 (Professional Export)
-- 內建報表區塊，可一鍵將計算結果轉換為 PNG 圖檔，方便附加於設計圖紙或技術文件中。
-
----
-
-## 📐 計算物理邏輯 (Physics Logic)
-
-本系統依據以下核心公式進行撰寫，確保計算結果具備工程參考價值：
-
-- **馬達轉速 (RPM)**：
-  $$N_m = \frac{V}{\pi \cdot D} \cdot i$$
-- **理論功率 (Power)**：
-  $$P_{kW} = \frac{F \cdot V}{\eta \cdot 1000} \cdot S.F.$$
-- **馬達端扭矩 (Motor Torque)**：
-  $$T_m = \frac{F \cdot R}{i \cdot \eta}$$
+### 🚀 核心功能 (V4.7)
+- **雙向計算模式**：支援「算功率」與「反算容許荷重」。
+- **精密扭矩分析**：同時顯示 **負載端 (捲筒)** 與 **馬達端 (經減速比與效率折算)** 的扭矩數值。
+- **智能選型推薦**：自動比對標準馬達規格表 (0.125HP ~ 30HP) 並建議馬達極數。
+- **安全防護機制**：
+    - 高轉速警示 (超過 1800 RPM 時提示)。
+    - 超規格提示 (超過 30HP 時自動標記為 **CUSTOM 特殊規格**)。
+- **專業報告導出**：整合 `html2canvas` 技術，一鍵生成 PNG 計算報告。
 
 ---
 
-## 💻 技術開發 (Technical Stack)
-
-- **Layout**: Tailwind CSS (JIT mode)
-- **Icons & Fonts**: JetBrains Mono, Noto Sans TC
-- **Core**: Vanilla JavaScript (Object-Literal Pattern)
-- **Library**: html2canvas v1.4.1
+## ⚖️ License / 授權說明
+This project is licensed under the **MIT License**. See the [LICENSE](./LICENSE) file for details.
+本專案採用 **MIT 授權條款**。詳情請參閱 [LICENSE](./LICENSE) 檔案。
 
 ---
 
-## 📅 版本更新歷程 (Change Log)
+## 📅 Change Log (更新歷程)
+- **V4.7** (Latest) - Added Dual Torque display and Over-limit safeguard.
+- **V4.6** - Multilingual support (EN/ZH) & UI animations.
+- **V4.0** - Tailwind CSS UI overhaul & Report export function.
 
-- **V4.7** (2025/01) - 加入雙扭矩顯示、馬達選型防呆提示。
-- **V4.6** - 新增多國語系 (EN/ZH) 切換功能、強化 UI 動畫。
-- **V4.0** - 引入 Tailwind CSS 介面重構，支援報表截圖導出。
-- **V1.0** - 基礎功率計算功能上線。
-
----
-
-## 👥 作者資訊 (Author)
+## 👥 Author
 - **Developer**: ChangYi (長益)
-- **Project Link**: [https://github.com/changyi3788/motor-load-calculator](https://github.com/changyi3788/motor-load-calculator)
+- **GitHub**: [changyi3788](https://github.com/changyi3788)
 
 ---
 
-> **Disclaimer (免責聲明)**: 
-> 本計算器提供之數據僅供設計初期參考使用。實際工程建置請務必聯繫專業馬達商進行負載曲線確認，並考慮馬達啟動扭矩 (Starting Torque) 與過載係數。
-
+> **Disclaimer / 免責聲明**: 
+> This tool is for design reference only. Please consult motor suppliers for final specifications.
+> 本工具提供之數據僅供設計參考，實際選型請務必諮詢馬達供應商。
