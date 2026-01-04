@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#020617">
-    <title>馬達負載計算系統 V4.6 - Precision Engineering</title>
+    <title>馬達負載計算系統 V4.7 - Precision Engineering</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -35,7 +35,7 @@
     <header class="mb-8 text-center pt-2">
         <h1 id="main-title" class="text-2xl font-black leading-tight uppercase tracking-tighter title-gradient"></h1>
         <div class="mt-4 flex justify-center gap-3">
-            <span class="text-[10px] bg-white text-black px-2 py-0.5 rounded font-black tracking-widest uppercase">System V4.6</span>
+            <span class="text-[10px] bg-white text-black px-2 py-0.5 rounded font-black tracking-widest uppercase">System V4.7</span>
             <button onclick="app.toggleLanguage()" class="text-[10px] bg-slate-800 text-slate-300 px-4 py-1 rounded-full border border-slate-700 font-bold active:bg-slate-600 transition">Language: EN / 中</button>
         </div>
     </header>
@@ -79,7 +79,12 @@
             <div id="report-grid" class="report-grid shadow-2xl">
                 <div class="report-cell"><span id="lbl-res-rpm" class="text-xs text-slate-500 font-black mb-2 uppercase tracking-tighter"></span><span id="res-rpm" class="text-2xl font-mono font-bold text-white">---</span><span id="rpm-warning" class="hidden"></span></div>
                 <div class="report-cell"><span id="lbl-res-load" class="text-xs text-slate-500 font-black mb-2 uppercase tracking-tighter"></span><span id="res-load" class="text-2xl font-mono font-bold">---</span></div>
-                <div class="report-cell"><span id="lbl-res-torque" class="text-xs text-slate-500 font-black mb-2 uppercase tracking-tighter"></span><span id="res-torque" class="text-2xl font-mono font-bold text-white">---</span></div>
+                
+                <div class="report-cell">
+                    <span id="lbl-res-torque" class="text-xs text-slate-500 font-black mb-2 uppercase tracking-tighter"></span>
+                    <div id="res-torque" class="flex flex-col items-center">---</div>
+                </div>
+                
                 <div class="report-cell"><span id="lbl-res-sf" class="text-xs text-slate-500 font-black mb-2 uppercase tracking-tighter"></span><span id="res-sf" class="text-2xl font-mono font-bold text-ind-accent">---</span></div>
                 
                 <div id="row-selection" class="report-cell col-span-2 py-8 border-t border-slate-800 bg-red-950/20">
@@ -127,11 +132,12 @@ const app = {
             gear: "效率 (η)", safety: "安全係數 (S.F.)", modeP: "算功率",
             modeL: "算荷重", inputLoad: "目標荷重 (kg)", inputPower: "馬達功率",
             report: "計算報告", resRPM: "馬達轉速", resSF: "安全係數",
-            resLoadP: "目標荷重", resLoadL: "容許荷重", resPowerP: "理論功率", resPowerL: "馬達功率", resTorque: "輸出轉矩(Nm)",
+            resLoadP: "目標荷重", resLoadL: "容許荷重", resPowerP: "理論功率", resPowerL: "馬達功率", resTorque: "扭矩 (Nm)",
             rpmHigh: "⚠️ RPM 高", gearOptions: [{ val: "0.95", text: "齒輪 (95%)" }, { val: "0.90", text: "擺線 (90%)" }, { val: "0.70", text: "渦輪 (70%)" }],
             sfOptions: [{ val: "1.5", text: "1.5 (標準)" }, { val: "2.0", text: "2.0 (重負載)" }],
             preset: "載入範例 (Demo)", btnCalc: "執行計算", btnReset: "重置", btnExport: "導出報告",
-            resRec: "建議規格推薦", poleSug: "建議極數", exporting: "處理中..."
+            resRec: "建議規格推薦", poleSug: "建議極數", exporting: "處理中...",
+            tLoad: "負載端", tMotor: "馬達端", overLimit: "特殊規格", overLimitSub: "請諮詢廠商"
         },
         en: {
             title: "Vertical Winch<br>Load System",
@@ -143,7 +149,8 @@ const app = {
             rpmHigh: "⚠️ HI-RPM", gearOptions: [{ val: "0.95", text: "Gear (95%)" }, { val: "0.90", text: "Cyclo (90%)" }, { val: "0.70", text: "Worm (70%)" }],
             sfOptions: [{ val: "1.5", text: "1.5 (Std)" }, { val: "2.0", text: "2.0 (Heavy)" }],
             preset: "Load Preset", btnCalc: "CALCULATE", btnReset: "RESET", btnExport: "EXPORT",
-            resRec: "Recommendation", poleSug: "Pole", exporting: "Saving..."
+            resRec: "Recommendation", poleSug: "Pole", exporting: "Saving...",
+            tLoad: "Load Side", tMotor: "Motor Side", overLimit: "CUSTOM", overLimitSub: "Check Spec"
         }
     },
     init() { this.populateDropdowns(); this.updateUI(); this.setMode('power'); },
@@ -216,13 +223,22 @@ const app = {
         warn.innerText = this.translations[this.state.lang].rpmHigh;
         
         let loadKg = 0, pKW = 0; const v = s / 60000;
+        
         if(this.state.mode === 'power') {
-            loadKg = val; pKW = (loadKg * this.G * v / eff) * sf / 1000;
+            loadKg = val; 
+            pKW = (loadKg * this.G * v / eff) * sf / 1000;
             this.renderPower(pKW, 'red');
             document.getElementById('res-load').className = "text-2xl font-mono font-bold text-ind-accent";
-            const rec = (this.standardMotors.find(m => m.kw >= pKW) || { hp: '?', kw: '?' });
+            
+            // --- 修改 1: 馬達選型邏輯 (含防呆) ---
+            let rec = this.standardMotors.find(m => m.kw >= pKW);
             const pole = motorRPM > 1800 ? "2P" : (motorRPM <= 900 ? "8P" : (motorRPM <= 1200 ? "6P" : "4P"));
-            document.getElementById('res-rec').innerHTML = `
+            const t = this.translations[this.state.lang];
+
+            let recHTML = "";
+            if (rec) {
+                // 有找到標準馬達
+                recHTML = `
                 <div class="flex flex-col items-center">
                     <div class="flex items-baseline gap-1">
                         <span class="text-ind-alert text-5xl font-black">${this.formatNum(rec.hp, 2)}</span>
@@ -232,18 +248,38 @@ const app = {
                         <span class="text-ind-alert text-xs font-black uppercase ml-1">kW</span>
                     </div>
                     <div class="mt-4 px-8 py-2 bg-red-600/20 border border-red-500/30 rounded-full">
-                        <span class="text-ind-alert text-[10px] font-black tracking-widest uppercase">${this.translations[this.state.lang].poleSug}: ${pole}</span>
+                        <span class="text-ind-alert text-[10px] font-black tracking-widest uppercase">${t.poleSug}: ${pole}</span>
                     </div>
                 </div>`;
+            } else {
+                // 超出範圍 (Over Limit)
+                recHTML = `
+                <div class="flex flex-col items-center py-2">
+                    <span class="text-ind-accent text-4xl font-black tracking-tighter uppercase">${t.overLimit}</span>
+                    <span class="text-slate-500 text-xs font-bold tracking-widest mt-2 uppercase border border-slate-700 px-3 py-1 rounded-full">${t.overLimitSub}</span>
+                </div>`;
+            }
+            document.getElementById('res-rec').innerHTML = recHTML;
+
         } else {
             pKW = this.state.powerUnit === 'HP' ? val * this.CONV : val;
             loadKg = (pKW * 1000 * eff) / (v * sf * this.G);
             this.renderPower(pKW, 'white');
             document.getElementById('res-load').className = "text-2xl font-mono font-bold text-rose-500";
         }
+        
         document.getElementById('res-load').innerText = this.formatNum(loadKg, 1);
-        // 力矩計算修正：r / 1000 轉換為公尺
-        document.getElementById('res-torque').innerText = this.formatNum(loadKg * this.G * (r / 1000), 1);
+        
+        // --- 修改 2: 雙扭矩計算與顯示 ---
+        const torqueLoad = loadKg * this.G * (r / 1000); // 負載端 (捲筒)
+        const torqueMotor = torqueLoad / (i * eff);      // 馬達端 (折算)
+        const t = this.translations[this.state.lang];
+        
+        document.getElementById('res-torque').innerHTML = `
+            <div class="font-mono font-bold text-white text-2xl">${this.formatNum(torqueLoad, 1)} <span class="text-[10px] text-slate-500 font-sans tracking-tight">(${t.tLoad})</span></div>
+            <div class="font-mono font-bold text-ind-accent text-lg mt-1 opacity-90">${this.formatNum(torqueMotor, 1)} <span class="text-[10px] text-ind-accent/70 font-sans tracking-tight">(${t.tMotor})</span></div>
+        `;
+
         document.getElementById('res-sf').innerText = this.formatNum(sf, 1);
         document.getElementById('report-container').classList.add('fade-show');
         
